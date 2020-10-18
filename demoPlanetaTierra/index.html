@@ -31,8 +31,26 @@
         
     
     <script>
+        // Tomo por GET que vertex-shader usar segun la variable 'ejercicio'
 
-        var vertexShaderFile="vertex-shader.glsl";
+        function getURLParam(param){
+            return new URLSearchParams(window.location.search).get(param);
+        }
+
+        var vertexShaderList={
+            1:'vertex-shader-ej1.glsl',
+            2:'vertex-shader-ej2.glsl',
+            3:'vertex-shader-ej3.glsl',
+            4:'vertex-shader-ej4.glsl',
+        };
+        var vertexShaderFile="vertex-shader.glsl";  //default
+        
+        var numEjercicio = getURLParam('ejercicio');
+        if (numEjercicio && vertexShaderList.hasOwnProperty(numEjercicio)) {
+            vertexShaderFile = vertexShaderList[numEjercicio];
+        }
+        console.log(vertexShaderFile);
+
         var modo="smooth"; // wireframe, smooth, edges
         var shaderProgram;
         var time=0;
