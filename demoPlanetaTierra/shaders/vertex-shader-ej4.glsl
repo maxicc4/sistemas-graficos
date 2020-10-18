@@ -41,9 +41,7 @@
             
             // **************** EDITAR A PARTIR DE AQUI *******************************
             
-            //position+=normal*(1.0+sin(uv.x*18.0*PI+time*20.0))*0.03;
             if (textureColor.b > textureColor.r && textureColor.b > textureColor.g) {
-                //position+=normal*sin(uv.x*7.0*PI+time*10.0)*0.1;
                 position+=normal*sin(uv.x*18.0*PI+time*20.0)*cos(uv.y*18.0*PI+time*20.0)*0.03;
             } else {
                 position+=normal*0.05;
