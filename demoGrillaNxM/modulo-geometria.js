@@ -29,14 +29,23 @@
 var superficie3D;
 var mallaDeTriangulos;
 
-var filas=8;
-var columnas=8;
+// Funcion que crea la superficie, cambiarla para crear otro tipo de superficie
+var funcionCrearSuperficie = crearEsfera;
+
+var filas=30;
+var columnas=50;
+
+function crearPlano(){
+    return new Plano(3,3);
+}
+
+function crearEsfera(){
+    return new Esfera(1.5);
+}
 
 
 function crearGeometria(){
-        
-
-    superficie3D=new Plano(3,3);
+    superficie3D=funcionCrearSuperficie();
     mallaDeTriangulos=generarSuperficie(superficie3D,filas,columnas);
     
 }
@@ -50,7 +59,6 @@ function dibujarGeometria(){
 function Plano(ancho,largo){
 
     this.getPosicion=function(u,v){
-
         var x=(u-0.5)*ancho;
         var z=(v-0.5)*largo;
         return [x,0,z];
@@ -65,6 +73,26 @@ function Plano(ancho,largo){
     }
 }
 
+function Esfera(radio){
+
+    this.getPosicion=function(u,v){
+        var x=Math.sin(Math.PI*v)*Math.cos(2*Math.PI*u)*radio;
+        var y=Math.cos(Math.PI*v)*radio;
+        var z=Math.sin(Math.PI*v)*Math.sin(2*Math.PI*u)*radio;
+        return [x,y,z];
+    }
+
+    this.getNormal=function(u,v){
+        var x=Math.sin(Math.PI*v)*Math.cos(2*Math.PI*u);
+        var y=Math.cos(Math.PI*v);
+        var z=Math.sin(Math.PI*v)*Math.sin(2*Math.PI*u);
+        return [x,y,z];
+    }
+
+    this.getCoordenadasTextura=function(u,v){
+        return [u,v];
+    }
+}
 
 
 
