@@ -29,8 +29,8 @@
 var superficie3D;
 var mallaDeTriangulos;
 
-var filas=1;
-var columnas=1;
+var filas=8;
+var columnas=8;
 
 
 function crearGeometria(){
@@ -102,16 +102,17 @@ function generarSuperficie(superficie,filas,columnas){
 
     // Buffer de indices de los triángulos
     
-    //indexBuffer=[];  
-    indexBuffer=[0,1,2,2,1,3]; // Estos valores iniciales harcodeados solo dibujan 2 triangulos, REMOVER ESTA LINEA!
-
+    indexBuffer=[];  
+    
     for (i=0; i < filas; i++) {
+        indexBuffer.push(i*(columnas+1));
+        indexBuffer.push(i*(columnas+1));
+        indexBuffer.push((i+1)*(columnas+1));
         for (j=0; j < columnas; j++) {
-
-            // completar la lógica necesaria para llenar el indexbuffer en funcion de filas y columnas
-            // teniendo en cuenta que se va a dibujar todo el buffer con la primitiva "triangle_strip" 
-            
+            indexBuffer.push(i*(columnas+1)+j+1);
+            indexBuffer.push((i+1)*(columnas+1)+j+1);
         }
+        indexBuffer.push((i+1)*(columnas+1)+columnas);
     }
 
     // Creación e Inicialización de los buffers
@@ -166,10 +167,7 @@ function dibujarMalla(mallaDeTriangulos){
 
     if (modo!="wireframe"){
         gl.uniform1i(shaderProgram.useLightingUniform,(lighting=="true"));                    
-        /*
-            Aqui es necesario modificar la primitiva por triangle_strip
-        */
-        gl.drawElements(gl.TRIANGLES, mallaDeTriangulos.webgl_index_buffer.numItems, gl.UNSIGNED_SHORT, 0);
+        gl.drawElements(gl.TRIANGLE_STRIP, mallaDeTriangulos.webgl_index_buffer.numItems, gl.UNSIGNED_SHORT, 0);
     }
     
     if (modo!="smooth") {
