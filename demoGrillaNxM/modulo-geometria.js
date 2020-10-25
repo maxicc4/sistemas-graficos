@@ -29,11 +29,11 @@
 var superficie3D;
 var mallaDeTriangulos;
 
-// Funcion que crea la superficie, cambiarla para crear otro tipo de superficie
-var funcionCrearSuperficie = crearEsfera;
+// VARIABLE GLOBAL QUE PERMITE CAMBIAR DE SUPERFICIE
+var funcionCrearSuperficie = crearTuboSenoidal;
 
-var filas=30;
-var columnas=50;
+var filas=100;
+var columnas=100;
 
 function crearPlano(){
     return new Plano(3,3);
@@ -41,6 +41,10 @@ function crearPlano(){
 
 function crearEsfera(){
     return new Esfera(1.5);
+}
+
+function crearTuboSenoidal(){
+    return new TuboSenoidal(0.1, 0.1, 1, 3);
 }
 
 
@@ -94,7 +98,35 @@ function Esfera(radio){
     }
 }
 
+function TuboSenoidal(amplitudOnda,longitudOnda,radio,altura){
 
+    this.getPosicion=function(u,v){
+        var x=(amplitudOnda*Math.sin((2*Math.PI/longitudOnda)*v+Math.PI)+radio)*Math.cos(2*Math.PI*u);
+        var y=(v-0.5)*altura;
+        var z=(amplitudOnda*Math.sin((2*Math.PI/longitudOnda)*v+Math.PI)+radio)*Math.sin(2*Math.PI*u);
+        return [x,y,z];
+    }
+
+    this.getNormal=function(u,v){
+        var deltaU = vec3.fromValues(
+            (amplitudOnda*Math.sin((2*Math.PI/longitudOnda)*v+Math.PI)+radio)*Math.cos(2*Math.PI*(u+0.01)), 
+            (v-0.5)*altura, 
+            (amplitudOnda*Math.sin((2*Math.PI/longitudOnda)*v+Math.PI)+radio)*Math.sin(2*Math.PI*(u+0.01))
+        );
+        var deltaV = vec3.fromValues(
+            (amplitudOnda*Math.sin((2*Math.PI/longitudOnda)*v+Math.PI)+radio)*Math.cos(2*Math.PI*u), 
+            (v+0.01-0.5)*altura, 
+            (amplitudOnda*Math.sin((2*Math.PI/longitudOnda)*v+Math.PI)+radio)*Math.sin(2*Math.PI*u)
+        );
+        var vecNormal = vec3.create();
+        vec3.cross(vecNormal, deltaU, deltaV);
+        return vecNormal;
+    }
+
+    this.getCoordenadasTextura=function(u,v){
+        return [u,v];
+    }
+}
 
 function generarSuperficie(superficie,filas,columnas){
     
