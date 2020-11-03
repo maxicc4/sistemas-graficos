@@ -57,6 +57,14 @@
 
        */
 
+       float factor = 15.0;     // cada cuantos frames se cambia la animacion
+
+       auxUv = auxUv*0.25;
+       auxUv.y = auxUv.y + 0.75;
+       auxUv.x = auxUv.x + 0.25*mod(floor(frame/factor), 4.0);
+       auxUv.y = auxUv.y - 0.25*mod(floor(frame/(factor*4.0)), 4.0);
+
+
        vUv = auxUv;
        gl_Position = projectionMatrix * modelViewMatrix * aux;
        
