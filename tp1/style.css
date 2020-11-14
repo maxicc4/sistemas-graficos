@@ -1,0 +1,13 @@
+body{
+    background-color: grey;
+}
+canvas{
+    background-color: white;
+}
+textarea{
+    background-color: black;
+    foreground-color: white;
+}
+.center {
+    text-align: center;
+}
