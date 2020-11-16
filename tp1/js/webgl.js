@@ -33,7 +33,8 @@ function initWebGL(){
     if(gl) {
         setupWebGL();
         initShaders();
-        setupBuffers();
+        //setupBuffers();
+        createObjects3D();
         setupVertexShaderMatrix();
         tick();
     }else{
@@ -103,6 +104,11 @@ function initShaders() {
     }
     //use program
     gl.useProgram(glProgram);
+
+    glProgram.vertexPositionAttribute = gl.getAttribLocation(glProgram, "aVertexPosition");
+    gl.enableVertexAttribArray(glProgram.vertexPositionAttribute);
+    glProgram.vertexNormalAttribute = gl.getAttribLocation(glProgram, "aVertexNormal");
+    gl.enableVertexAttribArray(glProgram.vertexNormalAttribute);
 }
 
 function makeShader(src, type){
@@ -223,7 +229,8 @@ function setupVertexShaderMatrix(){
 
 function drawScene(){
     setupVertexShaderMatrix();
-
+    dibujarGeometria();
+    /*
     vertexPositionAttribute = gl.getAttribLocation(glProgram, "aVertexPosition");
     gl.enableVertexAttribArray(vertexPositionAttribute);
     gl.bindBuffer(gl.ARRAY_BUFFER, trianglesVerticeBuffer);
@@ -235,7 +242,7 @@ function drawScene(){
     gl.vertexAttribPointer(vertexNormalAttribute, 3, gl.FLOAT, false, 0, 0);
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, trianglesIndexBuffer);
-    gl.drawElements( gl.TRIANGLE_STRIP, trianglesIndexBuffer.number_vertex_point, gl.UNSIGNED_SHORT, 0);
+    gl.drawElements( gl.TRIANGLE_STRIP, trianglesIndexBuffer.number_vertex_point, gl.UNSIGNED_SHORT, 0);*/
 }
 
 function animate(){
@@ -253,4 +260,8 @@ function tick(){
     requestAnimationFrame(tick);
     drawScene();
     animate();
+}
+
+function createObjects3D() {
+    crearGeometria();
 }
