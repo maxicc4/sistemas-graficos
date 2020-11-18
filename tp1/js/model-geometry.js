@@ -4,8 +4,8 @@ var mallaDeTriangulos;
 // VARIABLE GLOBAL QUE PERMITE CAMBIAR DE SUPERFICIE
 var funcionCrearSuperficie = crearTuboSenoidal;
 
-var filas=50;
-var columnas=50;
+var filas=100;
+var columnas=100;
 
 function crearPlano(){
     return new Plano(3,3);
@@ -79,18 +79,19 @@ function TuboSenoidal(amplitudOnda,longitudOnda,radio,altura){
     }
 
     this.getNormal=function(u,v){
-        var deltaU = vec3.fromValues(
-            (amplitudOnda*Math.sin((2*Math.PI/longitudOnda)*v+Math.PI)+radio)*Math.cos(2*Math.PI*(u+0.01)), 
-            (v-0.5)*altura, 
-            (amplitudOnda*Math.sin((2*Math.PI/longitudOnda)*v+Math.PI)+radio)*Math.sin(2*Math.PI*(u+0.01))
+        var tangU = vec3.fromValues(
+            (amplitudOnda*Math.sin((2*Math.PI/longitudOnda)*v+Math.PI)+radio)*Math.sin(2*Math.PI*u)*(-2*Math.PI),
+            0,
+            (amplitudOnda*Math.sin((2*Math.PI/longitudOnda)*v+Math.PI)+radio)*Math.cos(2*Math.PI*u)*2*Math.PI
         );
-        var deltaV = vec3.fromValues(
-            (amplitudOnda*Math.sin((2*Math.PI/longitudOnda)*v+Math.PI)+radio)*Math.cos(2*Math.PI*u), 
-            (v+0.01-0.5)*altura, 
-            (amplitudOnda*Math.sin((2*Math.PI/longitudOnda)*v+Math.PI)+radio)*Math.sin(2*Math.PI*u)
+        var tangV = vec3.fromValues(
+            (amplitudOnda*Math.cos((2*Math.PI/longitudOnda)*v+Math.PI)*(2*Math.PI/longitudOnda)+radio)*Math.cos(2*Math.PI*u),
+            altura,
+            (amplitudOnda*Math.cos((2*Math.PI/longitudOnda)*v+Math.PI)*(2*Math.PI/longitudOnda)+radio)*Math.sin(2*Math.PI*u)
         );
         var vecNormal = vec3.create();
-        vec3.cross(vecNormal, deltaU, deltaV);
+        vec3.cross(vecNormal, tangV, tangU);
+        vec3.normalize(vecNormal, vecNormal);
         return vecNormal;
     }
 
