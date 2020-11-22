@@ -2,7 +2,7 @@ var superficie3D;
 var mallaDeTriangulos;
 
 // VARIABLE GLOBAL QUE PERMITE CAMBIAR DE SUPERFICIE
-var funcionCrearSuperficie = crearTuboSenoidal;
+var funcionCrearSuperficie = crearCabina;
 
 var filas=100;
 var columnas=100;
@@ -17,6 +17,10 @@ function crearEsfera(){
 
 function crearTuboSenoidal(){
     return new TuboSenoidal(0.1, 0.1, 1, 3);
+}
+
+function crearCabina(){
+    return new Cabina(1.25, 0.6, 0.25);
 }
 
 
@@ -46,6 +50,10 @@ function Plano(ancho,largo){
     this.getCoordenadasTextura=function(u,v){
         return [u,v];
     }
+
+    this.tieneTapas=function () {
+        return false;
+    }
 }
 
 function Esfera(radio){
@@ -66,6 +74,10 @@ function Esfera(radio){
 
     this.getCoordenadasTextura=function(u,v){
         return [u,v];
+    }
+
+    this.tieneTapas=function () {
+        return false;
     }
 }
 
@@ -98,45 +110,187 @@ function TuboSenoidal(amplitudOnda,longitudOnda,radio,altura){
     this.getCoordenadasTextura=function(u,v){
         return [u,v];
     }
+
+    this.tieneTapas=function () {
+        return false;
+    }
+}
+
+function Cabina(largo, alto, ancho){
+
+    this.getPosicion=function(u,v){
+        var position;
+        if (u >= 0 && u <= 0.25) {
+            position = vec3.fromValues(2*largo*u-(largo/2), 3*alto*u-(alto/4), (v-0.5)*ancho);
+        } else if (u > 0.25 && u <= 0.5) {
+            position = vec3.fromValues(2*largo*(u-0.25), -alto*(u-0.25)+(alto/2), (v-0.5)*ancho);
+        } else if (u > 0.5 && u <= 0.75) {
+            position = vec3.fromValues(-2*largo*(u-0.5)+(largo/2), -3*alto*(u-0.5)+(alto/4), (v-0.5)*ancho);
+        } else if (u > 0.75 && u <= 1) {
+            position = vec3.fromValues(-2*largo*(u-0.75), alto*(u-0.75)-(alto/2), (v-0.5)*ancho);
+        }
+        return position;
+    }
+
+    this.getNormal=function(u,v){
+        var vecNormal;
+        if (u >= 0 && u <= 0.25) {
+            vecNormal = vec3.fromValues(-3*alto, 2*largo, 0);
+        } else if (u > 0.25 && u <= 0.5) {
+            vecNormal = vec3.fromValues(alto, 2*largo, 0);
+        } else if (u > 0.5 && u <= 0.75) {
+            vecNormal = vec3.fromValues(3*alto, -2*largo, 0);
+        } else if (u > 0.75 && u <= 1) {
+            vecNormal = vec3.fromValues(-alto, -2*largo, 0);
+        }
+        vec3.normalize(vecNormal, vecNormal);
+        return vecNormal;
+    }
+
+    this.getCoordenadasTextura=function(u,v){
+        return [u,v];
+    }
+
+    this.tieneTapas=function () {
+        return true;
+    }
+
+    // v deberia ser 0 o 1
+    this.getPosicionTapa=function (v) {
+        return  [0, 0, (v-0.5)*ancho];
+    }
+
+    // v deberia ser 0 o 1
+    this.getNormalTapa=function (v) {
+        var vecNormal;
+        vecNormal = vec3.fromValues(0, 0, v-0.5);
+        vec3.normalize(vecNormal, vecNormal);
+        return vecNormal;
+    }
+
+    this.getCoordenadasTexturaTapa=function(u,v){
+        return [u,v];
+    }
 }
 
 function generarSuperficie(superficie,filas,columnas){
-    
+
     positionBuffer = [];
     normalBuffer = [];
     uvBuffer = [];
 
-    for (var i=0; i <= filas; i++) {
+    var u, v, pos, nrm, uvs;
+
+    // tapa inferior (v===0)
+    if (superficie.tieneTapas()) {
+        v=0;
+        pos=superficie.getPosicionTapa(v);
+        nrm=superficie.getNormalTapa(v);
         for (var j=0; j <= columnas; j++) {
-
-            var u=j/columnas;
-            var v=i/filas;
-
-            var pos=superficie.getPosicion(u,v);
-
+            u=j/columnas;
             positionBuffer.push(pos[0]);
             positionBuffer.push(pos[1]);
             positionBuffer.push(pos[2]);
-
-            var nrm=superficie.getNormal(u,v);
 
             normalBuffer.push(nrm[0]);
             normalBuffer.push(nrm[1]);
             normalBuffer.push(nrm[2]);
 
-            var uvs=superficie.getCoordenadasTextura(u,v);
+            uvs=superficie.getCoordenadasTexturaTapa(u,v);
 
             uvBuffer.push(uvs[0]);
             uvBuffer.push(uvs[1]);
+        }
+        for (var j=0; j <= columnas; j++) {
+            u=j/columnas;
+            pos=superficie.getPosicion(u,v);
+            positionBuffer.push(pos[0]);
+            positionBuffer.push(pos[1]);
+            positionBuffer.push(pos[2]);
 
+            normalBuffer.push(nrm[0]);
+            normalBuffer.push(nrm[1]);
+            normalBuffer.push(nrm[2]);
+
+            uvs=superficie.getCoordenadasTexturaTapa(u,v);
+
+            uvBuffer.push(uvs[0]);
+            uvBuffer.push(uvs[1]);
+        }
+    }
+
+    for (var i=0; i <= filas; i++) {
+        for (var j=0; j <= columnas; j++) {
+
+            u=j/columnas;
+            v=i/filas;
+            pos=superficie.getPosicion(u,v);
+
+            positionBuffer.push(pos[0]);
+            positionBuffer.push(pos[1]);
+            positionBuffer.push(pos[2]);
+
+            nrm=superficie.getNormal(u,v);
+
+            normalBuffer.push(nrm[0]);
+            normalBuffer.push(nrm[1]);
+            normalBuffer.push(nrm[2]);
+
+            uvs=superficie.getCoordenadasTextura(u,v);
+
+            uvBuffer.push(uvs[0]);
+            uvBuffer.push(uvs[1]);
+        }
+    }
+
+    // tapa superior (v===1)
+    if (superficie.tieneTapas()) {
+        v=1;
+        nrm=superficie.getNormalTapa(v);
+        for (var j=0; j <= columnas; j++) {
+            u=j/columnas;
+            pos=superficie.getPosicion(u,v);
+            positionBuffer.push(pos[0]);
+            positionBuffer.push(pos[1]);
+            positionBuffer.push(pos[2]);
+
+            normalBuffer.push(nrm[0]);
+            normalBuffer.push(nrm[1]);
+            normalBuffer.push(nrm[2]);
+
+            uvs=superficie.getCoordenadasTexturaTapa(u,v);
+
+            uvBuffer.push(uvs[0]);
+            uvBuffer.push(uvs[1]);
+        }
+        pos=superficie.getPosicionTapa(v);
+        for (var j=0; j <= columnas; j++) {
+            u=j/columnas;
+            positionBuffer.push(pos[0]);
+            positionBuffer.push(pos[1]);
+            positionBuffer.push(pos[2]);
+
+            normalBuffer.push(nrm[0]);
+            normalBuffer.push(nrm[1]);
+            normalBuffer.push(nrm[2]);
+
+            uvs=superficie.getCoordenadasTexturaTapa(u,v);
+
+            uvBuffer.push(uvs[0]);
+            uvBuffer.push(uvs[1]);
         }
     }
 
     // Buffer de indices de los triángulos
     
-    indexBuffer=[];  
+    indexBuffer=[];
+    var filasTotales = filas;
+    if (superficie.tieneTapas()) {
+        // si tiene tapas, se adicionan 2 filas mas por cada tapa
+        filasTotales += 4;
+    }
     
-    for (i=0; i < filas; i++) {
+    for (i=0; i < filasTotales; i++) {
         indexBuffer.push(i*(columnas+1));
         indexBuffer.push(i*(columnas+1));
         indexBuffer.push((i+1)*(columnas+1));
