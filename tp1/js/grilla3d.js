@@ -137,49 +137,30 @@ function Cabina(largo, alto, ancho) {
 }
 
 
-function Objeto3D(superficie) {
-    this.filas = 100;
-    this.columnas = 100;
-    this.superficie3D = superficie;
-
-
-    /*this.crearPlano = function crearPlano() {
-        return new this.Plano(3, 3);
+class Grilla3D {
+    constructor(superficie) {
+        this.filas = 100;
+        this.columnas = 100;
+        this.superficie3D = superficie;
+        this.mallaDeTriangulos = this.generarSuperficie(this.superficie3D, this.filas, this.columnas);
     }
 
-    this.crearEsfera = function crearEsfera() {
-        return new this.Esfera(1.5);
-    }
-
-    this.crearTuboSenoidal = function crearTuboSenoidal() {
-        return new this.TuboSenoidal(0.1, 0.1, 1, 3);
-    }
-
-    this.crearCabina = function crearCabina() {
-        return new this.Cabina(1.25, 0.6, 0.25);
-    }*/
-
-
-    this.dibujarGeometria = function () {
-
+    dibujarGeometria() {
         this.dibujarMalla(this.mallaDeTriangulos);
-
     }
 
-    this.generarSuperficie = function (superficie, filas, columnas) {
-
-        positionBuffer = [];
-        normalBuffer = [];
-        uvBuffer = [];
-
-        var u, v, pos, nrm, uvs;
+    generarSuperficie(superficie, filas, columnas) {
+        let positionBuffer = [];
+        let normalBuffer = [];
+        let uvBuffer = [];
+        let u, v, pos, nrm, uvs;
 
         // tapa inferior (v===0)
         if (superficie.tieneTapas()) {
             v = 0;
             pos = superficie.getPosicionTapa(v);
             nrm = superficie.getNormalTapa(v);
-            for (var j = 0; j <= columnas; j++) {
+            for (let j = 0; j <= columnas; j++) {
                 u = j / columnas;
                 positionBuffer.push(pos[0]);
                 positionBuffer.push(pos[1]);
@@ -194,7 +175,7 @@ function Objeto3D(superficie) {
                 uvBuffer.push(uvs[0]);
                 uvBuffer.push(uvs[1]);
             }
-            for (var j = 0; j <= columnas; j++) {
+            for (let j = 0; j <= columnas; j++) {
                 u = j / columnas;
                 pos = superficie.getPosicion(u, v);
                 positionBuffer.push(pos[0]);
@@ -212,8 +193,8 @@ function Objeto3D(superficie) {
             }
         }
 
-        for (var i = 0; i <= filas; i++) {
-            for (var j = 0; j <= columnas; j++) {
+        for (let i = 0; i <= filas; i++) {
+            for (let j = 0; j <= columnas; j++) {
 
                 u = j / columnas;
                 v = i / filas;
@@ -240,7 +221,7 @@ function Objeto3D(superficie) {
         if (superficie.tieneTapas()) {
             v = 1;
             nrm = superficie.getNormalTapa(v);
-            for (var j = 0; j <= columnas; j++) {
+            for (let j = 0; j <= columnas; j++) {
                 u = j / columnas;
                 pos = superficie.getPosicion(u, v);
                 positionBuffer.push(pos[0]);
@@ -257,7 +238,7 @@ function Objeto3D(superficie) {
                 uvBuffer.push(uvs[1]);
             }
             pos = superficie.getPosicionTapa(v);
-            for (var j = 0; j <= columnas; j++) {
+            for (let j = 0; j <= columnas; j++) {
                 u = j / columnas;
                 positionBuffer.push(pos[0]);
                 positionBuffer.push(pos[1]);
@@ -276,18 +257,18 @@ function Objeto3D(superficie) {
 
         // Buffer de indices de los triángulos
 
-        indexBuffer = [];
+        let indexBuffer = [];
         var filasTotales = filas;
         if (superficie.tieneTapas()) {
             // si tiene tapas, se adicionan 2 filas mas por cada tapa
             filasTotales += 4;
         }
 
-        for (i = 0; i < filasTotales; i++) {
+        for (let i = 0; i < filasTotales; i++) {
             indexBuffer.push(i * (columnas + 1));
             indexBuffer.push(i * (columnas + 1));
             indexBuffer.push((i + 1) * (columnas + 1));
-            for (j = 0; j < columnas; j++) {
+            for (let j = 0; j < columnas; j++) {
                 indexBuffer.push(i * (columnas + 1) + j + 1);
                 indexBuffer.push((i + 1) * (columnas + 1) + j + 1);
             }
@@ -296,26 +277,26 @@ function Objeto3D(superficie) {
 
         // Creación e Inicialización de los buffers
 
-        webgl_position_buffer = gl.createBuffer();
+        let webgl_position_buffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, webgl_position_buffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positionBuffer), gl.STATIC_DRAW);
         webgl_position_buffer.itemSize = 3;
         webgl_position_buffer.numItems = positionBuffer.length / 3;
 
-        webgl_normal_buffer = gl.createBuffer();
+        let webgl_normal_buffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, webgl_normal_buffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normalBuffer), gl.STATIC_DRAW);
         webgl_normal_buffer.itemSize = 3;
         webgl_normal_buffer.numItems = normalBuffer.length / 3;
 
-        webgl_uvs_buffer = gl.createBuffer();
+        let webgl_uvs_buffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, webgl_uvs_buffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(uvBuffer), gl.STATIC_DRAW);
         webgl_uvs_buffer.itemSize = 2;
         webgl_uvs_buffer.numItems = uvBuffer.length / 2;
 
 
-        webgl_index_buffer = gl.createBuffer();
+        let webgl_index_buffer = gl.createBuffer();
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, webgl_index_buffer);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexBuffer), gl.STATIC_DRAW);
         webgl_index_buffer.itemSize = 1;
@@ -329,8 +310,7 @@ function Objeto3D(superficie) {
         }
     }
 
-    this.dibujarMalla = function (mallaDeTriangulos) {
-
+    dibujarMalla(mallaDeTriangulos) {
         // Se configuran los buffers que alimentaron el pipeline
         gl.bindBuffer(gl.ARRAY_BUFFER, mallaDeTriangulos.webgl_position_buffer);
         gl.vertexAttribPointer(glProgram.vertexPositionAttribute, mallaDeTriangulos.webgl_position_buffer.itemSize, gl.FLOAT, false, 0, 0);
@@ -353,7 +333,5 @@ function Objeto3D(superficie) {
             gl.uniform1i(glProgram.useLightingUniform,false);
             gl.drawElements(gl.LINE_STRIP, mallaDeTriangulos.webgl_index_buffer.numItems, gl.UNSIGNED_SHORT, 0);
         }*/
-
     }
-    this.mallaDeTriangulos = this.generarSuperficie(this.superficie3D, this.filas, this.columnas);
 }

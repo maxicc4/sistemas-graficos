@@ -21,7 +21,7 @@ var projMatrix = mat4.create();
 var normalMatrix = mat4.create();
 var rotate_angle = -1.57078;
 
-var helicoptero, esfera;
+var helicopter, esfera;
 
 
 function initWebGL(){
@@ -56,7 +56,6 @@ function setupWebGL(){
     mat4.perspective(projMatrix,45, canvas.width / canvas.height, 0.1, 100.0);
 
     mat4.identity(modelMatrix);
-    mat4.rotate(modelMatrix,modelMatrix, -1.57078, [1.0, 0.0, 0.0]);
 
     mat4.identity(viewMatrix);
     mat4.translate(viewMatrix,viewMatrix, [0.0, 0.0, -5.0]);
@@ -230,9 +229,11 @@ function setupVertexShaderMatrix(){
 }
 
 function drawScene(){
-    setupVertexShaderMatrix();
-    helicoptero.dibujarGeometria();
-    esfera.dibujarGeometria();
+    //setupVertexShaderMatrix();
+    helicopter.draw();
+    //mat4.translate(modelMatrix, modelMatrix, [2.0, 0.0, 0.0]);
+    //setupVertexShaderMatrix();
+    //esfera.draw();
     /*
     vertexPositionAttribute = gl.getAttribLocation(glProgram, "aVertexPosition");
     gl.enableVertexAttribArray(vertexPositionAttribute);
@@ -249,9 +250,11 @@ function drawScene(){
 }
 
 function animate(){
+
     rotate_angle += 0.01;
     mat4.identity(modelMatrix);
     mat4.rotate(modelMatrix,modelMatrix, rotate_angle, [1.0, 0.0, 1.0]);
+    helicopter.setM(modelMatrix);
 
     mat4.identity(normalMatrix);
     mat4.multiply(normalMatrix,viewMatrix,modelMatrix);
@@ -266,6 +269,10 @@ function tick(){
 }
 
 function createObjects3D() {
-    helicoptero = new Objeto3D(new Cabina(1.25, 0.6, 0.25));
-    esfera = new Objeto3D(new Esfera(0.5));
+    helicopter = new Helicopter(modelMatrix);
+    //esfera = new Sphere(modelMatrix);
+}
+
+function updateModelMatrix(newModelMatriz) {
+    modelMatrix = newModelMatriz;
 }
