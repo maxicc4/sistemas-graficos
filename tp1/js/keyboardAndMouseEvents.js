@@ -2,13 +2,7 @@ class KeyboardAndMouseEvents {
     constructor() {
         this.previousClientX = 0;
         this.previousClientY = 0;
-        this.radio = 5;
-        this.alfa = 0;
-        this.beta = Math.PI/2;
-        this.factorVelocidad = 0.01;
-
         this.isMouseDown = false;
-
         this.mouse = {x: 0, y: 0};
 
         let body = $("body");
@@ -51,19 +45,8 @@ class KeyboardAndMouseEvents {
         this.previousClientY = this.mouse.y;
 
         if (deltaX !== 0 || deltaY !== 0) {
-            this.alfa = this.alfa + deltaX * this.factorVelocidad;
-            this.beta = this.beta + deltaY * this.factorVelocidad;
-
-            if (this.beta <= 0) this.beta = 0.01;
-            if (this.beta > Math.PI) this.beta = Math.PI;
-
-            camera.setPosition(
-                vec3.fromValues(
-                    this.radio * Math.sin(this.alfa) * Math.sin(this.beta),
-                    this.radio * Math.cos(this.beta),
-                    this.radio * Math.cos(this.alfa) * Math.sin(this.beta)
-                )
-            );
+            camera.increaseAlpha(deltaX);
+            camera.increaseBeta(deltaY);
         }
     }
 }

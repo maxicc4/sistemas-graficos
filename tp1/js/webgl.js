@@ -57,7 +57,7 @@ function setupWebGL(){
 
     mat4.identity(modelMatrix);
 
-    camera = new Camera(vec3.fromValues(0, 0, 5), vec3.fromValues(0, 0, 0));
+    camera = new OrbitalCamera(5, vec3.fromValues(0, 0, 0));
     keyboardAndMouseEvents = new KeyboardAndMouseEvents();
 }
 
