@@ -7,7 +7,6 @@ class Object3D {
     }
 
     draw() {
-        console.log('Draw Object3D');
         updateModelMatrix(this.m);
         setupVertexShaderMatrix();
         if (this.grilla3D != null) {
