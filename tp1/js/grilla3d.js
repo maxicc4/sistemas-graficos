@@ -1,3 +1,48 @@
+class BezierCurve {
+    constructor(p0, p1, p2, p3) {
+        this.p0 = p0;
+        this.p1 = p1;
+        this.p2 = p2;
+        this.p3 = p3;
+    }
+
+    getBernsteinBasis(u) {
+        return {
+            b0: (1-u)*(1-u)*(1-u),
+            b1: 3*(1-u)*(1-u)*u,
+            b2: 3*(1-u)*u*u,
+            b3: u*u*u
+        }
+    }
+
+    getDerivedBernsteinBasis(u) {
+        return {
+            b0: -3*(1-u)*(1-u),
+            b1: -6*(1-u)*u + 3*(1-u)*(1-u),
+            b2: -3*u*u + 6*(1-u)*u,
+            b3: 3*u*u
+        }
+    }
+
+    getPosition(u) {
+        let bernsteinBasis = this.getBernsteinBasis(u);
+        return vec3.fromValues(
+            bernsteinBasis.b0*this.p0.x + bernsteinBasis.b1*this.p1.x + bernsteinBasis.b2*this.p2.x + bernsteinBasis.b3*this.p3.x,
+            bernsteinBasis.b0*this.p0.y + bernsteinBasis.b1*this.p1.y + bernsteinBasis.b2*this.p2.y + bernsteinBasis.b3*this.p3.y,
+            0
+        );
+    }
+
+    getTangent(u) {
+        let derivedBernsteinBasis = this.getDerivedBernsteinBasis(u);
+        return vec3.fromValues(
+            derivedBernsteinBasis.b0*this.p0.x + derivedBernsteinBasis.b1*this.p1.x + derivedBernsteinBasis.b2*this.p2.x + derivedBernsteinBasis.b3*this.p3.x,
+            derivedBernsteinBasis.b0*this.p0.y + derivedBernsteinBasis.b1*this.p1.y + derivedBernsteinBasis.b2*this.p2.y + derivedBernsteinBasis.b3*this.p3.y,
+            0
+        );
+    }
+}
+
 function Plano(ancho, largo) {
 
     this.getPosicion = function (u, v) {
@@ -81,101 +126,126 @@ function TuboSenoidal(amplitudOnda, longitudOnda, radio, altura) {
 
 function Cabina(largo, alto, ancho) {
 
-    function getBernsteinBasis(u) {
-        return {
-            b0: (1-u)*(1-u)*(1-u),
-            b1: 3*(1-u)*(1-u)*u,
-            b2: 3*(1-u)*u*u,
-            b3: u*u*u
-        }
-    }
-
     this.getPosicion = function (u, v) {
         let position;
-        let bernsteinBasis;
+        let bezierCurve;
         let p0, p1, p2, p3;
         if (u >= 0 && u <= 0.2) {                       // curva de bezier nro 1
             p0 = {x: -largo/2, y: -alto/4};
             p1 = {x: -largo*(31/64), y: alto*(3/16)};
             p2 = {x: -largo/4, y: alto*(3/8)};          // simetrico junto con p1 del tramo siguiente
             p3 = {x: -largo*(3/16), y: alto*(13/32)};
-            bernsteinBasis = getBernsteinBasis(u/0.2);
-            position = vec3.fromValues(
-                bernsteinBasis.b0*p0.x + bernsteinBasis.b1*p1.x + bernsteinBasis.b2*p2.x + bernsteinBasis.b3*p3.x,
-                bernsteinBasis.b0*p0.y + bernsteinBasis.b1*p1.y + bernsteinBasis.b2*p2.y + bernsteinBasis.b3*p3.y,
-                (v - 0.5) * ancho
-            );
+            bezierCurve = new BezierCurve(p0, p1, p2, p3);
+            position = bezierCurve.getPosition(u/0.2);
+            position[2] = (v - 0.5) * ancho;
         } else if (u > 0.2 && u <= 0.4) {               // curva de bezier nro 2
             p0 = {x: -largo*(3/16), y: alto*(13/32)};
             p1 = {x: -largo/8, y: alto*(7/16)};         // simetrico junto con p2 del tramo anterior
             p2 = {x: largo*(7/32), y: alto*(9/16)};
             p3 = {x: largo*(29/64), y: alto*(13/32)};
-            bernsteinBasis = getBernsteinBasis((u-0.2)/0.2);
-            position = vec3.fromValues(
-                bernsteinBasis.b0*p0.x + bernsteinBasis.b1*p1.x + bernsteinBasis.b2*p2.x + bernsteinBasis.b3*p3.x,
-                bernsteinBasis.b0*p0.y + bernsteinBasis.b1*p1.y + bernsteinBasis.b2*p2.y + bernsteinBasis.b3*p3.y,
-                (v - 0.5) * ancho
-            );
+            bezierCurve = new BezierCurve(p0, p1, p2, p3);
+            position = bezierCurve.getPosition((u-0.2)/0.2);
+            position[2] = (v - 0.5) * ancho;
         } else if (u > 0.4 && u <= 0.5) {               // curva de bezier nro 3
             p0 = {x: largo*(29/64), y: alto*(13/32)};
             p1 = {x: largo*0.4625, y: alto*(3/8)};      // esta dentro del segemento p0-p3
             p2 = {x: largo*0.490625, y: alto*(9/32)};   // esta dentro del segemento p0-p3
             p3 = {x: largo/2, y: alto/4};
-            bernsteinBasis = getBernsteinBasis((u-0.4)/0.1);
-            position = vec3.fromValues(
-                bernsteinBasis.b0*p0.x + bernsteinBasis.b1*p1.x + bernsteinBasis.b2*p2.x + bernsteinBasis.b3*p3.x,
-                bernsteinBasis.b0*p0.y + bernsteinBasis.b1*p1.y + bernsteinBasis.b2*p2.y + bernsteinBasis.b3*p3.y,
-                (v - 0.5) * ancho
-            );
+            bezierCurve = new BezierCurve(p0, p1, p2, p3);
+            position = bezierCurve.getPosition((u-0.4)/0.1);
+            position[2] = (v - 0.5) * ancho;
         } else if (u > 0.5 && u <= 0.7) {               // curva de bezier nro 4
             p0 = {x: largo/2, y: alto/4};
             p1 = {x: largo*(15/32), y: -alto*(7/32)};
             p2 = {x: largo/4, y: -alto*(3/8)};          // simetrico junto con p1 del tramo siguiente
             p3 = {x: largo*(3/16), y: -alto*(7/16)};
-            bernsteinBasis = getBernsteinBasis((u-0.5)/0.2);
-            position = vec3.fromValues(
-                bernsteinBasis.b0*p0.x + bernsteinBasis.b1*p1.x + bernsteinBasis.b2*p2.x + bernsteinBasis.b3*p3.x,
-                bernsteinBasis.b0*p0.y + bernsteinBasis.b1*p1.y + bernsteinBasis.b2*p2.y + bernsteinBasis.b3*p3.y,
-                (v - 0.5) * ancho
-            );
+            bezierCurve = new BezierCurve(p0, p1, p2, p3);
+            position = bezierCurve.getPosition((u-0.5)/0.2);
+            position[2] = (v - 0.5) * ancho;
         } else if (u > 0.7 && u <= 0.9) {               // curva de bezier nro 5
             p0 = {x: largo*(3/16), y: -alto*(7/16)};
             p1 = {x: largo/8, y: -alto/2};              // simetrico junto con p2 del tramo anterior
             p2 = {x: -largo*0.2265625, y: -alto*(19/32)};
             p3 = {x: -largo*(7/16), y: -alto*(13/32)};
-            bernsteinBasis = getBernsteinBasis((u-0.7)/0.2);
-            position = vec3.fromValues(
-                bernsteinBasis.b0*p0.x + bernsteinBasis.b1*p1.x + bernsteinBasis.b2*p2.x + bernsteinBasis.b3*p3.x,
-                bernsteinBasis.b0*p0.y + bernsteinBasis.b1*p1.y + bernsteinBasis.b2*p2.y + bernsteinBasis.b3*p3.y,
-                (v - 0.5) * ancho
-            );
-        } else if (u > 0.9 && u <= 1) {
+            bezierCurve = new BezierCurve(p0, p1, p2, p3);
+            position = bezierCurve.getPosition((u-0.7)/0.2);
+            position[2] = (v - 0.5) * ancho;
+        } else if (u > 0.9 && u <= 1) {                 // curva de bezier nro 6
             p0 = {x: -largo*(7/16), y: -alto*(13/32)};
-            p1 = {x: -largo*0.45, y: -alto*0.375};
-            p2 = {x: -largo*0.4875, y: -alto*0.28125};
+            p1 = {x: -largo*0.45, y: -alto*0.375};      // esta dentro del segemento p0-p3
+            p2 = {x: -largo*0.4875, y: -alto*0.28125};  // esta dentro del segemento p0-p3
             p3 = {x: -largo/2, y: -alto/4};
-            bernsteinBasis = getBernsteinBasis((u-0.9)/0.1);
-            position = vec3.fromValues(
-                bernsteinBasis.b0*p0.x + bernsteinBasis.b1*p1.x + bernsteinBasis.b2*p2.x + bernsteinBasis.b3*p3.x,
-                bernsteinBasis.b0*p0.y + bernsteinBasis.b1*p1.y + bernsteinBasis.b2*p2.y + bernsteinBasis.b3*p3.y,
-                (v - 0.5) * ancho
-            );
+            bezierCurve = new BezierCurve(p0, p1, p2, p3);
+            position = bezierCurve.getPosition((u-0.9)/0.1);
+            position[2] = (v - 0.5) * ancho;
         }
         return position;
     }
 
     this.getNormal = function (u, v) {
-        var vecNormal;
-        if (u >= 0 && u <= 0.25) {
-            vecNormal = vec3.fromValues(-3 * alto, 2 * largo, 0);
-        } else if (u > 0.25 && u <= 0.5) {
-            vecNormal = vec3.fromValues(alto, 2 * largo, 0);
-        } else if (u > 0.5 && u <= 0.75) {
-            vecNormal = vec3.fromValues(3 * alto, -2 * largo, 0);
-        } else if (u > 0.75 && u <= 1) {
-            vecNormal = vec3.fromValues(-alto, -2 * largo, 0);
+        let vecTangBezierCurve;
+        let vecTangV = vec3.create();
+        let bezierCurve;
+        let p0, p1, p2, p3;
+        if (u >= 0 && u <= 0.2) {                       // curva de bezier nro 1
+            p0 = {x: -largo/2, y: -alto/4};
+            p1 = {x: -largo*(31/64), y: alto*(3/16)};
+            p2 = {x: -largo/4, y: alto*(3/8)};          // simetrico junto con p1 del tramo siguiente
+            p3 = {x: -largo*(3/16), y: alto*(13/32)};
+            bezierCurve = new BezierCurve(p0, p1, p2, p3);
+            vecTangBezierCurve = bezierCurve.getTangent(u/0.2);
+        } else if (u > 0.2 && u <= 0.4) {               // curva de bezier nro 2
+            p0 = {x: -largo*(3/16), y: alto*(13/32)};
+            p1 = {x: -largo/8, y: alto*(7/16)};         // simetrico junto con p2 del tramo anterior
+            p2 = {x: largo*(7/32), y: alto*(9/16)};
+            p3 = {x: largo*(29/64), y: alto*(13/32)};
+            bezierCurve = new BezierCurve(p0, p1, p2, p3);
+            vecTangBezierCurve = bezierCurve.getTangent((u-0.2)/0.2);
+        } else if (u > 0.4 && u <= 0.5) {               // curva de bezier nro 3
+            p0 = {x: largo*(29/64), y: alto*(13/32)};
+            p1 = {x: largo*0.4625, y: alto*(3/8)};      // esta dentro del segemento p0-p3
+            p2 = {x: largo*0.490625, y: alto*(9/32)};   // esta dentro del segemento p0-p3
+            p3 = {x: largo/2, y: alto/4};
+            bezierCurve = new BezierCurve(p0, p1, p2, p3);
+            vecTangBezierCurve = bezierCurve.getTangent((u-0.4)/0.1);
+        } else if (u > 0.5 && u <= 0.7) {               // curva de bezier nro 4
+            p0 = {x: largo/2, y: alto/4};
+            p1 = {x: largo*(15/32), y: -alto*(7/32)};
+            p2 = {x: largo/4, y: -alto*(3/8)};          // simetrico junto con p1 del tramo siguiente
+            p3 = {x: largo*(3/16), y: -alto*(7/16)};
+            bezierCurve = new BezierCurve(p0, p1, p2, p3);
+            vecTangBezierCurve = bezierCurve.getTangent((u-0.5)/0.2);
+        } else if (u > 0.7 && u <= 0.9) {               // curva de bezier nro 5
+            p0 = {x: largo*(3/16), y: -alto*(7/16)};
+            p1 = {x: largo/8, y: -alto/2};              // simetrico junto con p2 del tramo anterior
+            p2 = {x: -largo*0.2265625, y: -alto*(19/32)};
+            p3 = {x: -largo*(7/16), y: -alto*(13/32)};
+            bezierCurve = new BezierCurve(p0, p1, p2, p3);
+            vecTangBezierCurve = bezierCurve.getTangent((u-0.7)/0.2);
+        } else if (u > 0.9 && u <= 1) {                 // curva de bezier nro 6
+            p0 = {x: -largo*(7/16), y: -alto*(13/32)};
+            p1 = {x: -largo*0.45, y: -alto*0.375};      // esta dentro del segemento p0-p3
+            p2 = {x: -largo*0.4875, y: -alto*0.28125};  // esta dentro del segemento p0-p3
+            p3 = {x: -largo/2, y: -alto/4};
+            bezierCurve = new BezierCurve(p0, p1, p2, p3);
+            vecTangBezierCurve = bezierCurve.getTangent((u-0.9)/0.1);
         }
+
+        if (v === 0) {
+            vec3.subtract(vecTangV, this.getPosicion(u, v), this.getPosicion(u, v+0.01));
+        } else if (v === 1) {
+            vec3.subtract(vecTangV, this.getPosicion(u, v-0.01), this.getPosicion(u, v));
+        } else {
+            vec3.subtract(vecTangV, this.getPosicion(u, v - 0.01), this.getPosicion(u, v + 0.01));
+        }
+        vec3.normalize(vecTangV, vecTangV);
+
+        let vecNormal = vec3.create();
+        vec3.cross(vecNormal, vecTangBezierCurve, vecTangV);
         vec3.normalize(vecNormal, vecNormal);
+        //console.log(vecTangBezierCurve);
+        //console.log(vecTangV);
+        //console.log(vecNormal);
         return vecNormal;
     }
 
