@@ -27,7 +27,7 @@ class Helicopter extends Object3D{
         let children = [];
         //children.push(new Sphere(m));
         //children.push(new Sphere(m));
-        super(m, new Grilla3D(new Cabina(1.25, 0.6, 0.25)), children);
+        super(m, new Grilla3D(new Cabina(1.25, 0.6, 0.45)), children);
         this.setM(m);
     }
 

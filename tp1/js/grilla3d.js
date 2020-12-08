@@ -148,8 +148,8 @@ function Cabina(largo, alto, ancho) {
             position[2] = (v - 0.5) * ancho;
         } else if (u > 0.4 && u <= 0.5) {               // curva de bezier nro 3
             p0 = {x: largo*(29/64), y: alto*(13/32)};
-            p1 = {x: largo*0.4625, y: alto*(3/8)};      // esta dentro del segemento p0-p3
-            p2 = {x: largo*0.490625, y: alto*(9/32)};   // esta dentro del segemento p0-p3
+            p1 = {x: largo*0.4625, y: alto*(3/8)};      // esta dentro del segmento p0-p3
+            p2 = {x: largo*0.490625, y: alto*(9/32)};   // esta dentro del segmento p0-p3
             p3 = {x: largo/2, y: alto/4};
             bezierCurve = new BezierCurve(p0, p1, p2, p3);
             position = bezierCurve.getPosition((u-0.4)/0.1);
@@ -172,14 +172,28 @@ function Cabina(largo, alto, ancho) {
             position[2] = (v - 0.5) * ancho;
         } else if (u > 0.9 && u <= 1) {                 // curva de bezier nro 6
             p0 = {x: -largo*(7/16), y: -alto*(13/32)};
-            p1 = {x: -largo*0.45, y: -alto*0.375};      // esta dentro del segemento p0-p3
-            p2 = {x: -largo*0.4875, y: -alto*0.28125};  // esta dentro del segemento p0-p3
+            p1 = {x: -largo*0.45, y: -alto*0.375};      // esta dentro del segmento p0-p3
+            p2 = {x: -largo*0.4875, y: -alto*0.28125};  // esta dentro del segmento p0-p3
             p3 = {x: -largo/2, y: -alto/4};
             bezierCurve = new BezierCurve(p0, p1, p2, p3);
             position = bezierCurve.getPosition((u-0.9)/0.1);
             position[2] = (v - 0.5) * ancho;
         }
+        position = this.scalePosition(position, v);
         return position;
+    }
+
+    this.scalePosition= function (position, v) {
+        let vAbs = Math.abs(v-0.5);
+        let newPosition = vec3.clone(position);
+        if (vAbs >= 0.25) {
+            newPosition[0] = newPosition[0]*((-0.09375)*vAbs+1);
+            newPosition[1] = newPosition[1]*((-0.25)*vAbs+1.015625);
+        } else {
+            newPosition[0] = newPosition[0]*((-0.09375)*vAbs+1);
+            newPosition[1] = newPosition[1]*((-0.1875)*vAbs+1);
+        }
+        return newPosition;
     }
 
     this.getNormal = function (u, v) {
@@ -203,8 +217,8 @@ function Cabina(largo, alto, ancho) {
             vecTangBezierCurve = bezierCurve.getTangent((u-0.2)/0.2);
         } else if (u > 0.4 && u <= 0.5) {               // curva de bezier nro 3
             p0 = {x: largo*(29/64), y: alto*(13/32)};
-            p1 = {x: largo*0.4625, y: alto*(3/8)};      // esta dentro del segemento p0-p3
-            p2 = {x: largo*0.490625, y: alto*(9/32)};   // esta dentro del segemento p0-p3
+            p1 = {x: largo*0.4625, y: alto*(3/8)};      // esta dentro del segmento p0-p3
+            p2 = {x: largo*0.490625, y: alto*(9/32)};   // esta dentro del segmento p0-p3
             p3 = {x: largo/2, y: alto/4};
             bezierCurve = new BezierCurve(p0, p1, p2, p3);
             vecTangBezierCurve = bezierCurve.getTangent((u-0.4)/0.1);
@@ -224,8 +238,8 @@ function Cabina(largo, alto, ancho) {
             vecTangBezierCurve = bezierCurve.getTangent((u-0.7)/0.2);
         } else if (u > 0.9 && u <= 1) {                 // curva de bezier nro 6
             p0 = {x: -largo*(7/16), y: -alto*(13/32)};
-            p1 = {x: -largo*0.45, y: -alto*0.375};      // esta dentro del segemento p0-p3
-            p2 = {x: -largo*0.4875, y: -alto*0.28125};  // esta dentro del segemento p0-p3
+            p1 = {x: -largo*0.45, y: -alto*0.375};      // esta dentro del segmento p0-p3
+            p2 = {x: -largo*0.4875, y: -alto*0.28125};  // esta dentro del segmento p0-p3
             p3 = {x: -largo/2, y: -alto/4};
             bezierCurve = new BezierCurve(p0, p1, p2, p3);
             vecTangBezierCurve = bezierCurve.getTangent((u-0.9)/0.1);
