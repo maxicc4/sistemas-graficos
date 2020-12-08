@@ -1,7 +1,7 @@
 
 class Object3D {
-    constructor(m, grilla3D, children) {
-        this.grilla3D = grilla3D;
+    constructor(m, grid3D, children) {
+        this.grid3D = grid3D;
         this.children = children;
         this.m = m;   // Matriz de modelado
     }
@@ -9,8 +9,8 @@ class Object3D {
     draw() {
         updateModelMatrix(this.m);
         setupVertexShaderMatrix();
-        if (this.grilla3D != null) {
-            this.grilla3D.dibujarGeometria();
+        if (this.grid3D != null) {
+            this.grid3D.drawGeometry();
         }
         for (let i=0; i < this.children.length; i++) {
             this.children[i].draw();
@@ -27,7 +27,7 @@ class Helicopter extends Object3D{
         let children = [];
         //children.push(new Sphere(m));
         //children.push(new Sphere(m));
-        super(m, new Grilla3D(new Cabina(1.25, 0.6, 0.45)), children);
+        super(m, new Grid3D(new Cabin(1.25, 0.6, 0.45)), children);
         this.setM(m);
     }
 
@@ -46,6 +46,6 @@ class Helicopter extends Object3D{
 
 class Sphere extends Object3D{
     constructor(m) {
-        super(m, new Grilla3D(new Esfera(0.5)), []);
+        super(m, new Grid3D(new SphereSurface(0.5)), []);
     }
 }
