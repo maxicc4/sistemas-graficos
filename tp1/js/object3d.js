@@ -34,7 +34,7 @@ class Helicopter extends Object3D{
         let children = [];
         children.push(new HelicopterArm(m));
         //children.push(new Sphere(m));
-        super(m, new Grid3D(new Cabin(1.25, 0.6, 0.45)), children);
+        super(m, new Grid3D(new Cabin(1.25, 0.6, 0.45), 20, 40), children);
         this.setM(m);
     }
 
@@ -53,7 +53,7 @@ class Helicopter extends Object3D{
 
 class HelicopterArm extends Object3D{
     constructor(m) {
-        super(m, new Grid3D(new Ring(0.18, 0.22, 0.18)), []);
+        super(m, new Grid3D(new Ring(0.18, 0.22, 0.18), 16, 20), []);
         this.setColor([0.8,0.23,0.16]);
     }
 }

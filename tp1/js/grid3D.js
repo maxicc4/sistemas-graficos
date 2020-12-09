@@ -44,9 +44,9 @@ class BezierCurve {
 }
 
 class Grid3D {
-    constructor(surface) {
-        this.rows = 100;
-        this.cols = 100;
+    constructor(surface, rows, cols) {
+        this.rows = rows;
+        this.cols = cols;
         this.surface3D = surface;
         this.triangleMesh = this.generateSurface(this.surface3D, this.rows, this.cols);
     }
