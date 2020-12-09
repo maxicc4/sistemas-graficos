@@ -1,3 +1,8 @@
+//const HELICOPTER_LENGTH = 2.5;
+//const HELICOPTER_HEIGHT = 1;
+const CABIN_LENGTH = 1.25;
+const CABIN_WIDTH = 0.45;
+const CABIN_HEIGHT = 0.6;
 
 class Object3D {
     constructor(m, grid3D, children) {
@@ -34,14 +39,14 @@ class Helicopter extends Object3D{
         let children = [];
         children.push(new HelicopterArm(m));
         //children.push(new Sphere(m));
-        super(m, new Grid3D(new Cabin(1.25, 0.6, 0.45), 20, 40), children);
+        super(m, new Grid3D(new Cabin(CABIN_LENGTH, CABIN_HEIGHT, CABIN_WIDTH), 20, 40), children);
         this.setM(m);
     }
 
     setM(m) {
         super.setM(m);
         let m1 = mat4.create();
-        mat4.translate(m1, m, [0,0.1,1]);
+        mat4.translate(m1, m, [-CABIN_LENGTH/7,(CABIN_HEIGHT/3),CABIN_WIDTH/2]);
         //mat4.scale(m1, m1, [0.25,0.25,0.25]);
         this.children[0].setM(m1);
         /*let m2 = mat4.create();
@@ -53,7 +58,14 @@ class Helicopter extends Object3D{
 
 class HelicopterArm extends Object3D{
     constructor(m) {
-        super(m, new Grid3D(new Ring(0.18, 0.22, 0.18), 16, 20), []);
-        this.setColor([0.8,0.23,0.16]);
+        super(m, new Grid3D(new Cylinder(CABIN_WIDTH/10, CABIN_LENGTH/5, true), 16, 20), []);
+        this.setM(m);
+        this.setColor([0.2,0.2,0.2]);
+    }
+
+    setM(m) {
+        let m1 = mat4.create();
+        mat4.rotate(m1, m, -Math.PI/2, [0,0,1]);
+        super.setM(m1);
     }
 }

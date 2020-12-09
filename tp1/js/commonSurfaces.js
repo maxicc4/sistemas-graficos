@@ -1,12 +1,12 @@
 class Plane {
-    constructor(width, long) {
+    constructor(width, length) {
         this.width = width;
-        this.long = long;
+        this.length = length;
     }
 
     getPosition(u, v) {
         let x = (u - 0.5) * this.width;
-        let z = (v - 0.5) * this.long;
+        let z = (v - 0.5) * this.length;
         return [x, 0, z];
     }
 
@@ -229,5 +229,58 @@ class Ring {
 
     haveCaps() {
         return false;
+    }
+}
+
+class Cylinder {
+    constructor(radius, height, caps) {
+        this.radius = radius;
+        this.height = height;
+        this.caps = caps;   // boolean
+    }
+
+    getPosition(u, v) {
+        let x = this.radius * Math.cos(2 * Math.PI * u);
+        let y = (v - 0.5) * this.height;
+        let z = this.radius * Math.sin(2 * Math.PI * u);
+        return [x, y, z];
+    }
+
+    getNormal(u, v) {
+        let tangU = vec3.fromValues(
+            this.radius * Math.sin(2 * Math.PI * u) * (-2 * Math.PI),
+            0,
+            this.radius * Math.cos(2 * Math.PI * u) * 2 * Math.PI
+        );
+        let tangV = vec3.fromValues(0, 1, 0);
+        let vecNormal = vec3.create();
+        vec3.cross(vecNormal, tangV, tangU);
+        vec3.normalize(vecNormal, vecNormal);
+        return vecNormal;
+    }
+
+    getTextureCoordinates(u, v) {
+        return [u, v];
+    }
+
+    haveCaps() {
+        return this.caps;
+    }
+
+    // v deberia ser 0 o 1
+    getCapPosition(v) {
+        return [0, (v - 0.5) * this.height, 0];
+    }
+
+    // v deberia ser 0 o 1
+    getCapNormal(v) {
+        let vecNormal;
+        vecNormal = vec3.fromValues(0, v - 0.5, 0);
+        vec3.normalize(vecNormal, vecNormal);
+        return vecNormal;
+    }
+
+    getCapTextureCoordinates(u, v) {
+        return [u, v];
     }
 }
