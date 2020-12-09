@@ -1,97 +1,3 @@
-class Plane {
-    constructor(width, long) {
-        this.width = width;
-        this.long = long;
-    }
-
-    getPosition(u, v) {
-        var x = (u - 0.5) * this.width;
-        var z = (v - 0.5) * this.long;
-        return [x, 0, z];
-    }
-
-    getNormal(u, v) {
-        return [0, 1, 0];
-    }
-
-    getTextureCoordinates(u, v) {
-        return [u, v];
-    }
-
-    haveCaps() {
-        return false;
-    }
-}
-
-class SphereSurface {
-    constructor(radio) {
-        this.radio = radio;
-    }
-
-    getPosition(u, v) {
-        var x = Math.sin(Math.PI * v) * Math.cos(2 * Math.PI * u) * this.radio;
-        var y = Math.cos(Math.PI * v) * this.radio;
-        var z = Math.sin(Math.PI * v) * Math.sin(2 * Math.PI * u) * this.radio;
-        return [x, y, z];
-    }
-
-    getNormal(u, v) {
-        var x = Math.sin(Math.PI * v) * Math.cos(2 * Math.PI * u);
-        var y = Math.cos(Math.PI * v);
-        var z = Math.sin(Math.PI * v) * Math.sin(2 * Math.PI * u);
-        return [x, y, z];
-    }
-
-    getTextureCoordinates(u, v) {
-        return [u, v];
-    }
-
-    haveCaps() {
-        return false;
-    }
-}
-
-class SineTube {
-    constructor(waveAmplitude, wavelength, radio, height) {
-        this.waveAmplitude = waveAmplitude;
-        this.wavelength = wavelength;
-        this.radio = radio;
-        this.height = height;
-    }
-
-    getPosition(u, v) {
-        var x = (this.waveAmplitude * Math.sin((2 * Math.PI / this.wavelength) * v + Math.PI) + this.radio) * Math.cos(2 * Math.PI * u);
-        var y = (v - 0.5) * this.height;
-        var z = (this.waveAmplitude * Math.sin((2 * Math.PI / this.wavelength) * v + Math.PI) + this.radio) * Math.sin(2 * Math.PI * u);
-        return [x, y, z];
-    }
-
-    getNormal(u, v) {
-        var tangU = vec3.fromValues(
-            (this.waveAmplitude * Math.sin((2 * Math.PI / this.wavelength) * v + Math.PI) + this.radio) * Math.sin(2 * Math.PI * u) * (-2 * Math.PI),
-            0,
-            (this.waveAmplitude * Math.sin((2 * Math.PI / this.wavelength) * v + Math.PI) + this.radio) * Math.cos(2 * Math.PI * u) * 2 * Math.PI
-        );
-        var tangV = vec3.fromValues(
-            (this.waveAmplitude * Math.cos((2 * Math.PI / this.wavelength) * v + Math.PI) * (2 * Math.PI / this.wavelength) + this.radio) * Math.cos(2 * Math.PI * u),
-            this.height,
-            (this.waveAmplitude * Math.cos((2 * Math.PI / this.wavelength) * v + Math.PI) * (2 * Math.PI / this.wavelength) + this.radio) * Math.sin(2 * Math.PI * u)
-        );
-        var vecNormal = vec3.create();
-        vec3.cross(vecNormal, tangV, tangU);
-        vec3.normalize(vecNormal, vecNormal);
-        return vecNormal;
-    }
-
-    getTextureCoordinates(u, v) {
-        return [u, v];
-    }
-
-    haveCaps() {
-        return false;
-    }
-}
-
 class Cabin {
     constructor(long, height, width) {
         this.long = long;
@@ -248,7 +154,7 @@ class Cabin {
 
     // v deberia ser 0 o 1
     getCapNormal(v) {
-        var vecNormal;
+        let vecNormal;
         vecNormal = vec3.fromValues(0, 0, v - 0.5);
         vec3.normalize(vecNormal, vecNormal);
         return vecNormal;
