@@ -159,15 +159,11 @@ function drawScene(){
 
 function animate(){
     keyboardAndMouseEvents.handler();
-    let viewMatrix = camera.getViewMatrix();
 
-    mat4.identity(modelMatrix);
-    helicopter.setM(modelMatrix);
-
-    mat4.identity(normalMatrix);
-    mat4.multiply(normalMatrix, viewMatrix, modelMatrix);
-    mat4.invert(normalMatrix, normalMatrix);
-    mat4.transpose(normalMatrix, normalMatrix);
+    let newModelMatrix = mat4.create();
+    mat4.identity(newModelMatrix);
+    helicopter.setM(newModelMatrix);
+    updateModelMatrix(newModelMatrix);
 }
 
 function tick(){
@@ -183,4 +179,11 @@ function createObjects3D() {
 
 function updateModelMatrix(newModelMatriz) {
     modelMatrix = newModelMatriz;
+
+    // se actualiza la matriz de normales
+    let viewMatrix = camera.getViewMatrix();
+    mat4.identity(normalMatrix);
+    mat4.multiply(normalMatrix, viewMatrix, modelMatrix);
+    mat4.invert(normalMatrix, normalMatrix);
+    mat4.transpose(normalMatrix, normalMatrix);
 }
