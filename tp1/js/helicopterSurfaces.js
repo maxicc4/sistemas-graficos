@@ -164,3 +164,85 @@ class Cabin {
         return [u, v];
     }
 }
+
+class ArmSurface {
+    constructor(length, initialWidth, finalWidth) {
+        this.length = length;
+        this.initialWidth = initialWidth;
+        this.finalWidth = finalWidth;
+    }
+
+    getPosition(u, v) {
+        let position;
+        let bezierCurve;
+        let width = this.initialWidth + (this.finalWidth - this.initialWidth)*v;
+        let p0, p1, p2, p3;
+        if (u >= 0 && u <= 0.25) {                       // curva de bezier nro 1
+            p0 = {x: -width/2, y: 0};
+            p1 = {x: -width/2, y: width/10};
+            p2 = {x: -width/10, y: width/2};
+            p3 = {x: 0, y: width/2};
+            bezierCurve = new BezierCurve(p0, p1, p2, p3);
+            position = bezierCurve.getPosition(u/0.25);
+        } else if (u > 0.25 && u <= 0.5) {               // curva de bezier nro 2
+            p0 = {x: 0, y: width/2};
+            p1 = {x: width/10, y: width/2};
+            p2 = {x: width/2, y: width/10};
+            p3 = {x: width/2, y: 0};
+            bezierCurve = new BezierCurve(p0, p1, p2, p3);
+            position = bezierCurve.getPosition((u-0.25)/0.25);
+        } else if (u > 0.5 && u <= 0.75) {               // curva de bezier nro 3
+            p0 = {x: width/2, y: 0};
+            p1 = {x: width/2, y: -width/10};
+            p2 = {x: width/10, y: -width/2};
+            p3 = {x: 0, y: -width/2};
+            bezierCurve = new BezierCurve(p0, p1, p2, p3);
+            position = bezierCurve.getPosition((u-0.5)/0.25);
+        } else if (u > 0.75 && u <= 1) {                // curva de bezier nro 4
+            p0 = {x: 0, y: -width/2};
+            p1 = {x: -width/10, y: -width/2};
+            p2 = {x: -width/2, y: -width/10};
+            p3 = {x: -width/2, y: 0};
+            bezierCurve = new BezierCurve(p0, p1, p2, p3);
+            position = bezierCurve.getPosition((u-0.75)/0.25);
+        }
+        position[2] = v*this.length;
+
+        return position;
+    }
+
+    getNormal(u, v) {
+        let vecTangBezierCurve = vec3.create();
+        let vecTangV = vec3.create();
+        if (u === 0) {
+            vec3.subtract(vecTangBezierCurve, this.getPosition(u, v), this.getPosition(u+0.01, v));
+        } else if (u === 1) {
+            vec3.subtract(vecTangBezierCurve, this.getPosition(u-0.01, v), this.getPosition(u, v));
+        } else {
+            vec3.subtract(vecTangBezierCurve, this.getPosition(u-0.01, v), this.getPosition(u+0.01, v));
+        }
+        vec3.normalize(vecTangBezierCurve, vecTangBezierCurve);
+
+        if (v === 0) {
+            vec3.subtract(vecTangV, this.getPosition(u, v), this.getPosition(u, v+0.01));
+        } else if (v === 1) {
+            vec3.subtract(vecTangV, this.getPosition(u, v-0.01), this.getPosition(u, v));
+        } else {
+            vec3.subtract(vecTangV, this.getPosition(u, v - 0.01), this.getPosition(u, v + 0.01));
+        }
+        vec3.normalize(vecTangV, vecTangV);
+
+        let vecNormal = vec3.create();
+        vec3.cross(vecNormal, vecTangV, vecTangBezierCurve);
+        vec3.normalize(vecNormal, vecNormal);
+        return vecNormal;
+    }
+
+    haveCaps() {
+        return false;
+    }
+
+    getTextureCoordinates(u, v) {
+        return [u,v];
+    }
+}
