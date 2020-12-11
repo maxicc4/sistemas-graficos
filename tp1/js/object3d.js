@@ -3,6 +3,7 @@
 const CABIN_LENGTH = 1.5;
 const CABIN_WIDTH = 0.6;
 const CABIN_HEIGHT = 0.65;
+const NUMBER_OF_BLADES = 12;
 
 class Object3D {
     constructor(m, grid3D, children) {
@@ -105,8 +106,51 @@ class Arm extends Object3D {
 class Propeller extends Object3D {
     constructor(m) {
         let children = [];
+        children.push(new PropellerShaft(m));
         super(m, new Grid3D(new Ring(CABIN_WIDTH*0.3, CABIN_WIDTH*0.375, CABIN_WIDTH*0.2), 16, 20), children);
         this.setM(m);
         this.setColor([0.8,0.23,0.16]);
+    }
+
+    setM(m) {
+        super.setM(m);
+        this.children[0].setM(m);
+    }
+}
+
+class PropellerShaft extends Object3D {
+    constructor(m) {
+        let children = [];
+        for (let i=0; i<NUMBER_OF_BLADES; i++) {
+            children.push(new Blade(m));
+        }
+        super(m, new Grid3D(new Cylinder(CABIN_LENGTH*0.025, CABIN_WIDTH*0.24, true), 16, 20), children);
+        this.setM(m);
+    }
+
+    setM(m) {
+        super.setM(m);
+        let mBlade = mat4.create();
+        let rad = 2*Math.PI/NUMBER_OF_BLADES;
+        for (let i=0; i<NUMBER_OF_BLADES; i++) {
+            mat4.rotate(mBlade, m, rad*i, [0,1,0]);
+            this.children[i].setM(mBlade);
+        }
+    }
+}
+
+class Blade extends Object3D {
+    constructor(m) {
+        let children = [];
+        super(m, new Grid3D(new BladeSurface(CABIN_WIDTH*0.025, CABIN_WIDTH*0.2, CABIN_WIDTH*0.3), 16, 20), children);
+        this.setM(m);
+        this.setColor([0.2,0.2,0.2]);
+    }
+
+    setM(m) {
+        let m1 = mat4.create();
+        mat4.rotate(m1, m, Math.PI/2, [1,0,0]);
+        mat4.rotate(m1, m1, Math.PI/4, [0,1,0]);
+        super.setM(m1);
     }
 }

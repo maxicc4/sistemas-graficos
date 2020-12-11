@@ -246,3 +246,38 @@ class ArmSurface {
         return [u,v];
     }
 }
+
+class BladeSurface {
+    constructor(initialWidth, finalWidth, length) {
+        this.initialWidth = initialWidth;
+        this.finalWidth = finalWidth;
+        this.length = length;
+    }
+
+    getPosition(u, v) {
+        let width = this.initialWidth + (this.finalWidth - this.initialWidth)*v;
+        let position;
+        if (u >=0 && u <=0.5) {
+            position = vec3.fromValues((u - 0.25) * width * 2, v * this.length, 0.0001);
+        } else if (u >0.5 && u <=1) {
+            position = vec3.fromValues(-(u - 0.75) * width * 2, v * this.length, -0.0001);
+        }
+        return position;
+    }
+
+    getNormal(u, v) {
+        if (u >=0 && u <=0.5) {
+            return vec3.fromValues(0, 0, 1);
+        } else if (u >0.5 && u <=1) {
+            return vec3.fromValues(0, 0, -1);
+        }
+    }
+
+    getTextureCoordinates(u, v) {
+        return [u, v];
+    }
+
+    haveCaps() {
+        return false;
+    }
+}
