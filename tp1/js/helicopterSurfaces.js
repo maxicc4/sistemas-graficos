@@ -1,5 +1,6 @@
-class Cabin {
+class Cabin extends Surface {
     constructor(length, height, width) {
+        super();
         this.length = length;
         this.height = height;
         this.width = width;
@@ -139,10 +140,6 @@ class Cabin {
         return vecNormal;
     }
 
-    getTextureCoordinates(u, v) {
-        return [u, v];
-    }
-
     haveCaps() {
         return true;
     }
@@ -165,8 +162,9 @@ class Cabin {
     }
 }
 
-class ArmSurface {
+class ArmSurface extends Surface {
     constructor(length, initialWidth, finalWidth) {
+        super();
         this.length = length;
         this.initialWidth = initialWidth;
         this.finalWidth = finalWidth;
@@ -210,45 +208,11 @@ class ArmSurface {
 
         return position;
     }
-
-    getNormal(u, v) {
-        let vecTangBezierCurve = vec3.create();
-        let vecTangV = vec3.create();
-        if (u === 0) {
-            vec3.subtract(vecTangBezierCurve, this.getPosition(u, v), this.getPosition(u+0.01, v));
-        } else if (u === 1) {
-            vec3.subtract(vecTangBezierCurve, this.getPosition(u-0.01, v), this.getPosition(u, v));
-        } else {
-            vec3.subtract(vecTangBezierCurve, this.getPosition(u-0.01, v), this.getPosition(u+0.01, v));
-        }
-        vec3.normalize(vecTangBezierCurve, vecTangBezierCurve);
-
-        if (v === 0) {
-            vec3.subtract(vecTangV, this.getPosition(u, v), this.getPosition(u, v+0.01));
-        } else if (v === 1) {
-            vec3.subtract(vecTangV, this.getPosition(u, v-0.01), this.getPosition(u, v));
-        } else {
-            vec3.subtract(vecTangV, this.getPosition(u, v - 0.01), this.getPosition(u, v + 0.01));
-        }
-        vec3.normalize(vecTangV, vecTangV);
-
-        let vecNormal = vec3.create();
-        vec3.cross(vecNormal, vecTangV, vecTangBezierCurve);
-        vec3.normalize(vecNormal, vecNormal);
-        return vecNormal;
-    }
-
-    haveCaps() {
-        return false;
-    }
-
-    getTextureCoordinates(u, v) {
-        return [u,v];
-    }
 }
 
-class BladeSurface {
+class BladeSurface extends Surface {
     constructor(initialWidth, finalWidth, length) {
+        super();
         this.initialWidth = initialWidth;
         this.finalWidth = finalWidth;
         this.length = length;
@@ -272,12 +236,45 @@ class BladeSurface {
             return vec3.fromValues(0, 0, -1);
         }
     }
+}
 
-    getTextureCoordinates(u, v) {
-        return [u, v];
+class TailTieRodSurface extends Surface {
+    constructor(initialWidth, finalWidth, length, thickness) {
+        super();
+        this.initialWidth = initialWidth;
+        this.finalWidth = finalWidth;
+        this.length = length;
+        this.thickness = thickness;
     }
 
-    haveCaps() {
-        return false;
+    getPosition(u, v) {
+        let width = this.initialWidth + (this.finalWidth - this.initialWidth)*u;
+        let position;
+        if (v >=0 && v <=0.25) {
+            position = vec3.fromValues(
+                u * this.length,
+                -(v/0.25) * width,
+                this.thickness/2
+            );
+        } else if (v >0.25 && v <=0.5) {
+            position = vec3.fromValues(
+                u * this.length,
+                -width,
+                -((v-0.25)/0.25)*this.thickness + this.thickness/2
+            );
+        } else if (v >0.5 && v <=0.75) {
+            position = vec3.fromValues(
+                u * this.length,
+                ((v-0.5)/0.25) * width - width,
+                -this.thickness/2
+            );
+        } else if (v >0.75 && v <=1) {
+            position = vec3.fromValues(
+                u * this.length,
+                0,
+                ((v-0.75)/0.25)*this.thickness - this.thickness/2
+            );
+        }
+        return position;
     }
 }

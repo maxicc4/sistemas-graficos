@@ -42,6 +42,7 @@ class Helicopter extends Object3D {
         children.push(new RotorArm(m));
         children.push(new RotorArm(m));
         children.push(new RotorArm(m));
+        children.push(new Tail(m));
         super(m, new Grid3D(new Cabin(CABIN_LENGTH, CABIN_HEIGHT, CABIN_WIDTH), 20, 40), children);
         this.setM(m);
     }
@@ -62,6 +63,10 @@ class Helicopter extends Object3D {
         mat4.translate(mRotorArm4, m, [CABIN_LENGTH/4,(CABIN_HEIGHT/3),-CABIN_WIDTH/2]);
         mat4.rotate(mRotorArm4, mRotorArm4, Math.PI, [0,1,0]);
         this.children[3].setM(mRotorArm4);
+
+        let mTail = mat4.create();
+        mat4.translate(mTail, m, [CABIN_LENGTH*0.45,CABIN_HEIGHT/4,0]);
+        this.children[4].setM(mTail);
     }
 }
 
@@ -152,5 +157,37 @@ class Blade extends Object3D {
         mat4.rotate(m1, m, Math.PI/2, [1,0,0]);
         mat4.rotate(m1, m1, Math.PI/4, [0,1,0]);
         super.setM(m1);
+    }
+}
+
+class Tail extends Object3D {
+    constructor(m) {
+        let children = [];
+        children.push(new TailTieRod(m));
+        children.push(new TailTieRod(m));
+        super(m, null, children);
+        this.setM(m);
+    }
+
+    setM(m) {
+        super.setM(m);
+        let mTailTieRod1 = mat4.create();
+        mat4.translate(mTailTieRod1, m, [0,0,CABIN_WIDTH/4]);
+        this.children[0].setM(mTailTieRod1);
+        let mTailTieRod2 = mat4.create();
+        mat4.translate(mTailTieRod2, m, [0,0,-CABIN_WIDTH/4]);
+        this.children[1].setM(mTailTieRod2);
+    }
+}
+
+class TailTieRod extends Object3D {
+    constructor(m) {
+        let children = [];
+        super(m, new Grid3D(new TailTieRodSurface(CABIN_HEIGHT/4, CABIN_HEIGHT/16, CABIN_LENGTH/2, CABIN_WIDTH/32), 16, 20), children);
+        this.setM(m);
+    }
+
+    setM(m) {
+        super.setM(m);
     }
 }

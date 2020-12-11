@@ -1,5 +1,47 @@
-class Plane {
+class Surface {
+    getPosition(u, v) {
+        return vec3.fromValues(0,0,0);
+    }
+
+    getNormal(u, v) {
+        let vecTangU = vec3.create();
+        let vecTangV = vec3.create();
+        if (u === 0) {
+            vec3.subtract(vecTangU, this.getPosition(u, v), this.getPosition(u+0.01, v));
+        } else if (u === 1) {
+            vec3.subtract(vecTangU, this.getPosition(u-0.01, v), this.getPosition(u, v));
+        } else {
+            vec3.subtract(vecTangU, this.getPosition(u-0.01, v), this.getPosition(u+0.01, v));
+        }
+        vec3.normalize(vecTangU, vecTangU);
+
+        if (v === 0) {
+            vec3.subtract(vecTangV, this.getPosition(u, v), this.getPosition(u, v+0.01));
+        } else if (v === 1) {
+            vec3.subtract(vecTangV, this.getPosition(u, v-0.01), this.getPosition(u, v));
+        } else {
+            vec3.subtract(vecTangV, this.getPosition(u, v - 0.01), this.getPosition(u, v + 0.01));
+        }
+        vec3.normalize(vecTangV, vecTangV);
+
+        let vecNormal = vec3.create();
+        vec3.cross(vecNormal, vecTangV, vecTangU);
+        vec3.normalize(vecNormal, vecNormal);
+        return vecNormal;
+    }
+
+    getTextureCoordinates(u, v) {
+        return [u, v];
+    }
+
+    haveCaps() {
+        return false;
+    }
+}
+
+class Plane extends Surface{
     constructor(width, length) {
+        super();
         this.width = width;
         this.length = length;
     }
@@ -13,18 +55,11 @@ class Plane {
     getNormal(u, v) {
         return [0, 1, 0];
     }
-
-    getTextureCoordinates(u, v) {
-        return [u, v];
-    }
-
-    haveCaps() {
-        return false;
-    }
 }
 
-class SphereSurface {
+class SphereSurface extends Surface {
     constructor(radius) {
+        super();
         this.radius = radius;
     }
 
@@ -41,18 +76,11 @@ class SphereSurface {
         let z = Math.sin(Math.PI * v) * Math.sin(2 * Math.PI * u);
         return [x, y, z];
     }
-
-    getTextureCoordinates(u, v) {
-        return [u, v];
-    }
-
-    haveCaps() {
-        return false;
-    }
 }
 
-class SineTube {
+class SineTube extends Surface {
     constructor(waveAmplitude, wavelength, radius, height) {
+        super();
         this.waveAmplitude = waveAmplitude;
         this.wavelength = wavelength;
         this.radius = radius;
@@ -82,18 +110,11 @@ class SineTube {
         vec3.normalize(vecNormal, vecNormal);
         return vecNormal;
     }
-
-    getTextureCoordinates(u, v) {
-        return [u, v];
-    }
-
-    haveCaps() {
-        return false;
-    }
 }
 
-class Ring {
+class Ring extends Surface {
     constructor(innerRadius, outerRadius, height) {
+        super();
         this.innerRadius = innerRadius;
         this.outerRadius = outerRadius;
         this.height = height;
@@ -222,18 +243,11 @@ class Ring {
         vec3.normalize(vecNormal, vecNormal);
         return vecNormal;
     }
-
-    getTextureCoordinates(u, v) {
-        return [u, v];
-    }
-
-    haveCaps() {
-        return false;
-    }
 }
 
-class Cylinder {
+class Cylinder extends Surface {
     constructor(radius, height, caps) {
+        super();
         this.radius = radius;
         this.height = height;
         this.caps = caps;   // boolean
@@ -257,10 +271,6 @@ class Cylinder {
         vec3.cross(vecNormal, tangV, tangU);
         vec3.normalize(vecNormal, vecNormal);
         return vecNormal;
-    }
-
-    getTextureCoordinates(u, v) {
-        return [u, v];
     }
 
     haveCaps() {
