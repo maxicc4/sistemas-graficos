@@ -278,3 +278,99 @@ class TailTieRodSurface extends Surface {
         return position;
     }
 }
+
+class FinSurface extends Surface {
+    constructor(width, height, thickness) {
+        super();
+        this.width = width;
+        this.height = height;
+        this.thickness = thickness;
+    }
+
+    getPosition(u, v) {
+        let position;
+        let bezierCurve;
+        let p0, p1, p2, p3;
+        if (u >= 0 && u <= 0.125) {                                 // curva de bezier nro 1
+            p0 = {x: -this.width*0.35, y: -this.height*0.45};
+            p1 = {x: -this.width*0.35, y: -this.height*0.425};
+            p2 = {x: this.width*0.35, y: this.height*0.425};
+            p3 = {x: this.width*0.4, y: this.height*0.45};
+            bezierCurve = new BezierCurve(p0, p1, p2, p3);
+            position = bezierCurve.getPosition(u/0.125);
+        } else if (u > 0.125 && u <= 0.25) {                        // curva de bezier nro 2
+            p0 = {x: this.width*0.4, y: this.height*0.45};
+            p1 = {x: this.width*0.45, y: this.height*0.475};
+            p2 = {x: this.width*0.55, y: this.height*0.5};
+            p3 = {x: this.width*0.6, y: this.height*0.5};
+            bezierCurve = new BezierCurve(p0, p1, p2, p3);
+            position = bezierCurve.getPosition((u-0.125)/0.125);
+        } else if (u > 0.25 && u <= 0.375) {                        // curva de bezier nro 3
+            p0 = {x: this.width*0.6, y: this.height*0.5};
+            p1 = {x: this.width*0.65, y: this.height*0.5};
+            p2 = {x: this.width*1.25, y: this.height*0.5};
+            p3 = {x: this.width*1.3, y: this.height*0.5};
+            bezierCurve = new BezierCurve(p0, p1, p2, p3);
+            position = bezierCurve.getPosition((u-0.25)/0.125);
+        } else if (u > 0.375 && u <= 0.5) {                        // curva de bezier nro 4
+            p0 = {x: this.width*1.3, y: this.height*0.5};
+            p1 = {x: this.width*1.35, y: this.height*0.5};
+            p2 = {x: this.width*1.4, y: this.height*0.5};
+            p3 = {x: this.width*1.4, y: this.height*0.45};
+            bezierCurve = new BezierCurve(p0, p1, p2, p3);
+            position = bezierCurve.getPosition((u-0.375)/0.125);
+        } else if (u > 0.5 && u <= 0.625) {                        // curva de bezier nro 5
+            p0 = {x: this.width*1.4, y: this.height*0.45};
+            p1 = {x: this.width*1.4, y: this.height*0.425};
+            p2 = {x: this.width*0.65, y: -this.height*0.425};
+            p3 = {x: this.width*0.6, y: -this.height*0.45};
+            bezierCurve = new BezierCurve(p0, p1, p2, p3);
+            position = bezierCurve.getPosition((u-0.5)/0.125);
+        } else if (u > 0.625 && u <= 0.75) {                        // curva de bezier nro 6
+            p0 = {x: this.width*0.6, y: -this.height*0.45};
+            p1 = {x: this.width*0.55, y: -this.height*0.475};
+            p2 = {x: this.width*0.45, y: -this.height*0.5};
+            p3 = {x: this.width*0.4, y: -this.height*0.5};
+            bezierCurve = new BezierCurve(p0, p1, p2, p3);
+            position = bezierCurve.getPosition((u-0.625)/0.125);
+        } else if (u > 0.75 && u <= 0.875) {                        // curva de bezier nro 7
+            p0 = {x: this.width*0.4, y: -this.height*0.5};
+            p1 = {x: this.width*0.35, y: -this.height*0.5};
+            p2 = {x: -this.width*0.2, y: -this.height*0.5};
+            p3 = {x: -this.width*0.25, y: -this.height*0.5};
+            bezierCurve = new BezierCurve(p0, p1, p2, p3);
+            position = bezierCurve.getPosition((u-0.75)/0.125);
+        } else if (u > 0.875 && u <= 1) {                           // curva de bezier nro 8
+            p0 = {x: -this.width*0.25, y: -this.height*0.5};
+            p1 = {x: -this.width*0.3, y: -this.height*0.5};
+            p2 = {x: -this.width*0.35, y: -this.height*0.5};
+            p3 = {x: -this.width*0.35, y: -this.height*0.45};
+            bezierCurve = new BezierCurve(p0, p1, p2, p3);
+            position = bezierCurve.getPosition((u-0.875)/0.125);
+        }
+        position[2] = (v - 0.5) * this.thickness;
+
+        return position;
+    }
+
+    haveCaps() {
+        return true;
+    }
+
+    // v deberia ser 0 o 1
+    getCapPosition(v) {
+        return [this.width/2, 0, (v - 0.5) * this.thickness];
+    }
+
+    // v deberia ser 0 o 1
+    getCapNormal(v) {
+        let vecNormal;
+        vecNormal = vec3.fromValues(0, 0, v - 0.5);
+        vec3.normalize(vecNormal, vecNormal);
+        return vecNormal;
+    }
+
+    getCapTextureCoordinates(u, v) {
+        return [u, v];
+    }
+}

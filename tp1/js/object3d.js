@@ -200,8 +200,31 @@ class TailTieRod extends Object3D {
 class TailCylinder extends Object3D {
     constructor(m) {
         let children = [];
-        super(m, new Grid3D(new Cylinder(CABIN_LENGTH*0.015, CABIN_WIDTH*0.6, false), 16, 20), children);
+        children.push(new Fin(m));
+        children.push(new Fin(m));
+        super(m, new Grid3D(new Cylinder(CABIN_LENGTH*0.015, CABIN_WIDTH*0.6, true), 16, 20), children);
         this.setM(m);
+    }
+
+    setM(m) {
+        super.setM(m);
+        let mFin1 = mat4.create();
+        mat4.translate(mFin1, m, [-CABIN_LENGTH*0.015,CABIN_WIDTH*0.3,0]);
+        mat4.rotate(mFin1, mFin1, Math.PI/2, [-1,0,0]);
+        this.children[0].setM(mFin1);
+        let mFin2 = mat4.create();
+        mat4.translate(mFin2, m, [-CABIN_LENGTH*0.015,-CABIN_WIDTH*0.3,0]);
+        mat4.rotate(mFin2, mFin2, Math.PI/2, [-1,0,0]);
+        this.children[1].setM(mFin2);
+    }
+}
+
+class Fin extends Object3D {
+    constructor(m) {
+        let children = [];
+        super(m, new Grid3D(new FinSurface(CABIN_WIDTH*0.48, CABIN_HEIGHT, CABIN_WIDTH/32), 16, 20), children);
+        this.setM(m);
+        this.setColor([0.51,0.18,0.15]);
     }
 
     setM(m) {
