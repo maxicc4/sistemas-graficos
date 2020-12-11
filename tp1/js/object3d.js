@@ -144,7 +144,7 @@ class Blade extends Object3D {
         let children = [];
         super(m, new Grid3D(new BladeSurface(CABIN_WIDTH*0.025, CABIN_WIDTH*0.2, CABIN_WIDTH*0.3), 16, 20), children);
         this.setM(m);
-        this.setColor([0.2,0.2,0.2]);
+        this.setColor([0.6,0.6,0.6]);
     }
 
     setM(m) {
