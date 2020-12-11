@@ -165,6 +165,7 @@ class Tail extends Object3D {
         let children = [];
         children.push(new TailTieRod(m));
         children.push(new TailTieRod(m));
+        children.push(new TailCylinder(m));
         super(m, null, children);
         this.setM(m);
     }
@@ -172,11 +173,15 @@ class Tail extends Object3D {
     setM(m) {
         super.setM(m);
         let mTailTieRod1 = mat4.create();
-        mat4.translate(mTailTieRod1, m, [0,0,CABIN_WIDTH/4]);
+        mat4.translate(mTailTieRod1, m, [0,0,CABIN_WIDTH/5]);
         this.children[0].setM(mTailTieRod1);
         let mTailTieRod2 = mat4.create();
-        mat4.translate(mTailTieRod2, m, [0,0,-CABIN_WIDTH/4]);
+        mat4.translate(mTailTieRod2, m, [0,0,-CABIN_WIDTH/5]);
         this.children[1].setM(mTailTieRod2);
+        let mTailCylinder = mat4.create();
+        mat4.translate(mTailCylinder, m, [CABIN_LENGTH/2,-CABIN_HEIGHT/32,0]);
+        mat4.rotate(mTailCylinder, mTailCylinder, Math.PI/2, [1,0,0]);
+        this.children[2].setM(mTailCylinder);
     }
 }
 
@@ -184,6 +189,18 @@ class TailTieRod extends Object3D {
     constructor(m) {
         let children = [];
         super(m, new Grid3D(new TailTieRodSurface(CABIN_HEIGHT/4, CABIN_HEIGHT/16, CABIN_LENGTH/2, CABIN_WIDTH/32), 16, 20), children);
+        this.setM(m);
+    }
+
+    setM(m) {
+        super.setM(m);
+    }
+}
+
+class TailCylinder extends Object3D {
+    constructor(m) {
+        let children = [];
+        super(m, new Grid3D(new Cylinder(CABIN_LENGTH*0.015, CABIN_WIDTH*0.6, false), 16, 20), children);
         this.setM(m);
     }
 
