@@ -43,6 +43,8 @@ class Helicopter extends Object3D {
         children.push(new RotorArm(m));
         children.push(new RotorArm(m));
         children.push(new Tail(m));
+        children.push(new Skid(m));
+        children.push(new Skid(m));
         super(m, new Grid3D(new Cabin(CABIN_LENGTH, CABIN_HEIGHT, CABIN_WIDTH), 20, 40), children);
         this.setM(m);
     }
@@ -67,6 +69,16 @@ class Helicopter extends Object3D {
         let mTail = mat4.create();
         mat4.translate(mTail, m, [CABIN_LENGTH*0.45,CABIN_HEIGHT/4,0]);
         this.children[4].setM(mTail);
+
+        let mSkid1 = mat4.create();
+        mat4.translate(mSkid1, m, [-CABIN_LENGTH*0.09,-CABIN_HEIGHT*0.75,CABIN_WIDTH*0.4]);
+        mat4.rotate(mSkid1, mSkid1, Math.PI/2, [0,0,-1]);
+        this.children[5].setM(mSkid1);
+        let mSkid2 = mat4.create();
+        mat4.translate(mSkid2, m, [-CABIN_LENGTH*0.09,-CABIN_HEIGHT*0.75,-CABIN_WIDTH*0.4]);
+        mat4.rotate(mSkid2, mSkid2, Math.PI, [0,1,0]);
+        mat4.rotate(mSkid2, mSkid2, Math.PI/2, [0,0,-1]);
+        this.children[6].setM(mSkid2);
     }
 }
 
@@ -219,15 +231,51 @@ class TailCylinder extends Object3D {
     }
 }
 
+// aleta de la cola
 class Fin extends Object3D {
     constructor(m) {
         let children = [];
         super(m, new Grid3D(new FinSurface(CABIN_WIDTH*0.48, CABIN_HEIGHT, CABIN_WIDTH/32), 16, 20), children);
         this.setM(m);
-        this.setColor([0.51,0.18,0.15]);
+        this.setColor([0.8,0.23,0.16]);
     }
 
     setM(m) {
         super.setM(m);
+    }
+}
+
+class Skid extends Object3D {
+    constructor(m) {
+        let children = [];
+        children.push(new SkidCylinder(m));
+        children.push(new SkidCylinder(m));
+        super(m, new Grid3D(new SkidSurface(CABIN_LENGTH*0.6, CABIN_LENGTH*0.015), 16, 20), children);
+        this.setM(m);
+        this.setColor([0.5,0.5,0.5]);
+    }
+
+    setM(m) {
+        super.setM(m);
+        let mSkidCylinder1 = mat4.create();
+        mat4.translate(mSkidCylinder1, m, [-CABIN_HEIGHT/6,-CABIN_HEIGHT*0.28,-Math.cos(Math.PI*0.4)*CABIN_HEIGHT/6]);
+        mat4.rotate(mSkidCylinder1, mSkidCylinder1, Math.PI*0.1, [0,-1,0]);
+        mat4.rotate(mSkidCylinder1, mSkidCylinder1, Math.PI/2, [0,0,1]);
+        this.children[0].setM(mSkidCylinder1);
+
+        let mSkidCylinder2 = mat4.create();
+        mat4.translate(mSkidCylinder2, m, [-CABIN_HEIGHT/6,CABIN_HEIGHT*0.33,-Math.cos(Math.PI*0.4)*CABIN_HEIGHT/6]);
+        mat4.rotate(mSkidCylinder2, mSkidCylinder2, Math.PI*0.1, [0,-1,0]);
+        mat4.rotate(mSkidCylinder2, mSkidCylinder2, Math.PI/2, [0,0,1]);
+        this.children[1].setM(mSkidCylinder2);
+    }
+}
+
+class SkidCylinder extends Object3D {
+    constructor(m) {
+        let children = [];
+        super(m, new Grid3D(new Cylinder(CABIN_LENGTH*0.015, CABIN_HEIGHT/3, false), 16, 20), children);
+        this.setM(m);
+        this.setColor([0.2,0.2,0.2]);
     }
 }

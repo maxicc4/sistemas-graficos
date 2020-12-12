@@ -374,3 +374,104 @@ class FinSurface extends Surface {
         return [u, v];
     }
 }
+
+class SkidSurface extends Surface {
+    constructor(length, radius) {
+        super();
+        this.length = length;
+        this.radius = radius;
+    }
+
+    getPosition(u, v) {
+        let position;
+        let trajectory;
+        let bezierCurve;
+        let p0, p1, p2, p3;
+
+        if (v>=0 && v<=0.333) {
+            p0 = {x: -this.length*0.0625, y: -this.length*0.5};
+            p1 = {x: 0, y: -this.length*0.5};
+            p2 = {x: 0, y: -this.length*0.4375};
+            p3 = {x: 0, y: -this.length*0.375};
+            bezierCurve = new BezierCurve(p0, p1, p2, p3);
+            trajectory = bezierCurve.getPosition(v/0.333);
+
+            position = vec3.fromValues(
+                this.radius * Math.cos(2 * Math.PI * u) + trajectory[0],
+                trajectory[1],
+                this.radius * Math.sin(2 * Math.PI * u)
+            );
+        } else if (v>0.333 && v<=0.666) {
+            p0 = {x: 0, y: -this.length*0.375};
+            p1 = {x: 0, y: -this.length*0.1};
+            p2 = {x: 0, y: this.length*0.1};
+            p3 = {x: 0, y: this.length*0.375};
+            bezierCurve = new BezierCurve(p0, p1, p2, p3);
+            trajectory = bezierCurve.getPosition((v-0.333)/0.333);
+
+            position = vec3.fromValues(
+                this.radius * Math.cos(2 * Math.PI * u),
+                trajectory[1],
+                this.radius * Math.sin(2 * Math.PI * u)
+            );
+        }  else if (v>0.666 && v<=1) {
+            p0 = {x: 0, y: this.length*0.375};
+            p1 = {x: 0, y: this.length*0.4375};
+            p2 = {x: 0, y: this.length*0.5};
+            p3 = {x: -this.length*0.0625, y: this.length*0.5};
+            bezierCurve = new BezierCurve(p0, p1, p2, p3);
+            trajectory = bezierCurve.getPosition((v-0.666)/0.333);
+
+            position = vec3.fromValues(
+                this.radius * Math.cos(2 * Math.PI * u) + trajectory[0],
+                trajectory[1],
+                this.radius * Math.sin(2 * Math.PI * u)
+            );
+        }
+        return position;
+    }
+
+    haveCaps() {
+        return true;
+    }
+
+    // v deberia ser 0 o 1
+    getCapPosition(v) {
+        if (v === 0) {
+            return vec3.fromValues(-this.length*0.0625, -this.length*0.5, 0);
+        } else if (v === 1) {
+            return vec3.fromValues(-this.length*0.0625, this.length*0.5, 0);
+        }
+    }
+
+    // v deberia ser 0 o 1
+    getCapNormal(v) {
+        let vecNormal;
+        let trajectory;
+        let bezierCurve;
+        let p0, p1, p2, p3;
+        if (v === 0) {
+            p0 = {x: -this.length*0.0625, y: -this.length*0.5};
+            p1 = {x: 0, y: -this.length*0.5};
+            p2 = {x: 0, y: -this.length*0.4375};
+            p3 = {x: 0, y: -this.length*0.375};
+            bezierCurve = new BezierCurve(p0, p1, p2, p3);
+            vecNormal = bezierCurve.getTangent(v);      // la tangente a la trayectoria al inicio es opuesta a la normal
+            vec3.negate(vecNormal, vecNormal);
+        } else if (v === 1) {
+            p0 = {x: 0, y: this.length*0.375};
+            p1 = {x: 0, y: this.length*0.4375};
+            p2 = {x: 0, y: this.length*0.5};
+            p3 = {x: -this.length*0.0625, y: this.length*0.5};
+            bezierCurve = new BezierCurve(p0, p1, p2, p3);
+            vecNormal = bezierCurve.getTangent(v);      // la tangente a la trayectoria en el inicio es igual a la normal
+        }
+        vec3.normalize(vecNormal, vecNormal);
+        console.log(vecNormal);
+        return vecNormal;
+    }
+
+    getCapTextureCoordinates(u, v) {
+        return [u, v];
+    }
+}
