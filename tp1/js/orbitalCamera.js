@@ -1,7 +1,8 @@
 
 class OrbitalCamera {
-    constructor(radio, target) {
-        this.radio = radio;
+    constructor(radius, target) {
+        this.initialRadius = radius;
+        this.radius = radius;
         this.target = target;
         // valores iniciales
         this.alpha = 0;
@@ -28,9 +29,17 @@ class OrbitalCamera {
 
     getPosition() {
         return vec3.fromValues(
-            this.radio * Math.sin(this.alpha) * Math.sin(this.beta),
-            this.radio * Math.cos(this.beta),
-            this.radio * Math.cos(this.alpha) * Math.sin(this.beta)
+            this.radius * Math.sin(this.alpha) * Math.sin(this.beta),
+            this.radius * Math.cos(this.beta),
+            this.radius * Math.cos(this.alpha) * Math.sin(this.beta)
         )
+    }
+
+    zoomIn() {
+        this.radius = Math.min(Math.max(this.initialRadius*0.5, this.radius - this.initialRadius*0.1), this.initialRadius*2);
+    }
+
+    zoomOut() {
+        this.radius = Math.min(Math.max(this.initialRadius*0.5, this.radius + this.initialRadius*0.1), this.initialRadius*2);
     }
 }

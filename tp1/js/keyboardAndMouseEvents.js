@@ -29,6 +29,16 @@ class KeyboardAndMouseEvents {
             }
 
         }.bind(this));
+
+        body.on('wheel mousewheel', function(event){
+            if(event.originalEvent.deltaY < 0){
+                camera.zoomIn();
+            }
+            else {
+                camera.zoomOut();
+            }
+            console.log(event.originalEvent.deltaY);
+        });
     }
 
     handler() {
