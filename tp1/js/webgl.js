@@ -27,6 +27,8 @@ var helicopter, esfera;
 
 function initWebGL(){
     canvas = document.getElementById("my-canvas");
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
     try{
         gl = canvas.getContext("webgl");
     }catch(e){
