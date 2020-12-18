@@ -60,9 +60,6 @@ function setupWebGL(){
     mat4.perspective(projMatrix,45, canvas.width / canvas.height, 0.1, 100.0);
 
     mat4.identity(modelMatrix);
-
-    camera = new OrbitalCamera(5, vec3.fromValues(0, 0, 0));
-    cameraControllerInstance = new CameraController(camera);
 }
 
 function loadShadersAndInitWebGL(){
@@ -163,8 +160,8 @@ function drawScene(){
 }
 
 function animate(){
-    cameraControllerInstance.update();
     helicopterControllerInstance.update();
+    cameraControllerInstance.update();
 
     /*let newModelMatrix = mat4.create();
     mat4.identity(newModelMatrix);
@@ -181,6 +178,9 @@ function tick(){
 function createObjects3D() {
     helicopterContainer = new HelicopterContainer(modelMatrix);
     helicopterControllerInstance = new HelicopterController(helicopterContainer);
+
+    camera = new OrbitalCamera(5, helicopterContainer);
+    cameraControllerInstance = new CameraController(camera);
 
     let mAleta = mat4.create();
     mat4.translate(mAleta, modelMatrix, [-2, 0, -5]);

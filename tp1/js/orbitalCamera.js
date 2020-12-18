@@ -13,7 +13,7 @@ class OrbitalCamera {
 
     getViewMatrix() {
         let viewMatrix = mat4.create();
-        mat4.lookAt(viewMatrix, this.getPosition(), this.target, vec3.fromValues(0,1,0));
+        mat4.lookAt(viewMatrix, this.getPosition(), this.target.getPosition(), vec3.fromValues(0,1,0));
         return viewMatrix;
     }
 
@@ -28,10 +28,11 @@ class OrbitalCamera {
     }
 
     getPosition() {
+        let origin = this.target.getPosition();
         return vec3.fromValues(
-            this.radius * Math.sin(this.alpha) * Math.sin(this.beta),
-            this.radius * Math.cos(this.beta),
-            this.radius * Math.cos(this.alpha) * Math.sin(this.beta)
+            this.radius * Math.sin(this.alpha) * Math.sin(this.beta) + origin[0],
+            this.radius * Math.cos(this.beta) + origin[1],
+            this.radius * Math.cos(this.alpha) * Math.sin(this.beta) + origin[2]
         )
     }
 

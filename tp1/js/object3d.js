@@ -43,7 +43,8 @@ class Object3D {
 
     getPosition() {
         let pos = vec3.create();
-        vec3.transformMat4(pos, vec3.fromValues(0,0,0), this.m);
+        vec3.zero(pos);
+        vec3.transformMat4(pos, pos, this.m);
         return pos;
     }
 }
