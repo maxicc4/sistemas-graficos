@@ -16,7 +16,6 @@ var vertexPositionAttribute = null,
     trianglesIndexBuffer = null;
 
 var modelMatrix = mat4.create();
-var camera = null;
 var cameraControllerInstance = null;
 var projMatrix = mat4.create();
 var normalMatrix = mat4.create();
@@ -132,7 +131,7 @@ function setupVertexShaderMatrix(){
     var normalMatrixUniform  = gl.getUniformLocation(glProgram, "normalMatrix");
 
     gl.uniformMatrix4fv(modelMatrixUniform, false, modelMatrix);
-    gl.uniformMatrix4fv(viewMatrixUniform, false, camera.getViewMatrix());
+    gl.uniformMatrix4fv(viewMatrixUniform, false, cameraControllerInstance.getCamera().getViewMatrix());
     gl.uniformMatrix4fv(projMatrixUniform, false, projMatrix);
     gl.uniformMatrix4fv(normalMatrixUniform, false, normalMatrix);
 }
@@ -179,8 +178,7 @@ function createObjects3D() {
     helicopterContainer = new HelicopterContainer(modelMatrix);
     helicopterControllerInstance = new HelicopterController(helicopterContainer);
 
-    camera = new OrbitalCamera(5, helicopterContainer);
-    cameraControllerInstance = new CameraController(camera);
+    cameraControllerInstance = new CameraController( new OrbitalCamera(5, helicopterContainer) );
 
     let mAleta = mat4.create();
     mat4.translate(mAleta, modelMatrix, [-2, 0, -5]);
@@ -191,7 +189,7 @@ function updateModelMatrix(newModelMatriz) {
     modelMatrix = newModelMatriz;
 
     // se actualiza la matriz de normales
-    let viewMatrix = camera.getViewMatrix();
+    let viewMatrix = cameraControllerInstance.getCamera().getViewMatrix();
     mat4.identity(normalMatrix);
     mat4.multiply(normalMatrix, viewMatrix, modelMatrix);
     mat4.invert(normalMatrix, normalMatrix);

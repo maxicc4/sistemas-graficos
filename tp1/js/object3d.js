@@ -69,9 +69,6 @@ class HelicopterContainer extends Object3D {
         mat4.rotate(mHelicopter, mHelicopterController, this.pitch, [0, 0, 1]);
         mat4.rotate(mHelicopter, mHelicopter, this.roll, [1, 0, 0]);
         this.children[0].setM(mHelicopter);
-        console.log(this.yaw);
-        console.log(this.pitch);
-        console.log(this.roll);
     }
 
     setYaw(yaw) {
@@ -84,6 +81,25 @@ class HelicopterContainer extends Object3D {
 
     setRoll(roll) {
         this.roll = roll;
+    }
+
+    getDirection(direction) {
+        let pos;
+        switch (direction) {
+            case 'rear':
+                pos = vec3.fromValues(-1, 0, 0);
+                break;
+            case 'rightSide':
+                pos = vec3.fromValues(0, 0, 1);
+                break;
+            case 'upper':
+                pos = vec3.fromValues(0, 1, 0);
+                break;
+        }
+        vec3.transformMat4(pos, pos, this.m);
+        vec3.subtract(pos, pos, this.getPosition());
+        vec3.normalize(pos, pos);
+        return pos;
     }
 }
 

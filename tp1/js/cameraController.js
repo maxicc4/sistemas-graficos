@@ -5,6 +5,7 @@ class CameraController {
         this.isMouseDown = false;
         this.mouse = {x: 0, y: 0};
         this.camera = camera;
+        this.initialRadiusCamera = this.camera.getRadius();
 
         let body = $("body");
         body.mousemove(function(e){
@@ -30,6 +31,29 @@ class CameraController {
                 this.camera.zoomOut();
             }
         }.bind(this));
+
+        body.keydown(function(e){
+            let handled = true;
+            switch(e.key.toUpperCase()){
+                case "1":
+                    this.camera = new OrbitalCamera(this.initialRadiusCamera, this.camera.getTarget());
+                    break;
+                case "2":
+                    this.camera = new RearTrackingCamera(this.initialRadiusCamera, this.camera.getTarget());
+                    break;
+                case "3":
+                    this.camera = new SideTrackingCamera(this.initialRadiusCamera, this.camera.getTarget());
+                    break;
+                case "4":
+                    this.camera = new UpperTrackingCamera(this.initialRadiusCamera, this.camera.getTarget());
+                    break;
+                default:
+                    handled = false;
+            }
+            if (handled) {
+                e.preventDefault();
+            }
+        }.bind(this));
     }
 
     update() {
@@ -49,5 +73,9 @@ class CameraController {
             this.camera.increaseAlpha(deltaX);
             this.camera.increaseBeta(deltaY);
         }
+    }
+
+    getCamera() {
+        return this.camera;
     }
 }
