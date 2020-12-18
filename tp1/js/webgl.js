@@ -17,12 +17,14 @@ var vertexPositionAttribute = null,
 
 var modelMatrix = mat4.create();
 var camera = null;
-var keyboardAndMouseEvents = null;
+var cameraControllerInstance = null;
 var projMatrix = mat4.create();
 var normalMatrix = mat4.create();
 var rotate_angle = -1.57078;
 
-var helicopter, esfera;
+var helicopterContainer, aleta;
+
+var helicopterControllerInstance;
 
 
 function initWebGL(){
@@ -60,7 +62,7 @@ function setupWebGL(){
     mat4.identity(modelMatrix);
 
     camera = new OrbitalCamera(5, vec3.fromValues(0, 0, 0));
-    keyboardAndMouseEvents = new KeyboardAndMouseEvents();
+    cameraControllerInstance = new CameraController(camera);
 }
 
 function loadShadersAndInitWebGL(){
@@ -140,7 +142,8 @@ function setupVertexShaderMatrix(){
 
 function drawScene(){
     //setupVertexShaderMatrix();
-    helicopter.draw();
+    helicopterContainer.draw();
+    aleta.draw();
     //mat4.translate(modelMatrix, modelMatrix, [2.0, 0.0, 0.0]);
     //setupVertexShaderMatrix();
     //esfera.draw();
@@ -160,12 +163,13 @@ function drawScene(){
 }
 
 function animate(){
-    keyboardAndMouseEvents.handler();
+    cameraControllerInstance.update();
+    helicopterControllerInstance.update();
 
-    let newModelMatrix = mat4.create();
+    /*let newModelMatrix = mat4.create();
     mat4.identity(newModelMatrix);
-    helicopter.setM(newModelMatrix);
-    updateModelMatrix(newModelMatrix);
+    helicopterContainer.setM(newModelMatrix);
+    updateModelMatrix(newModelMatrix);*/
 }
 
 function tick(){
@@ -175,8 +179,12 @@ function tick(){
 }
 
 function createObjects3D() {
-    helicopter = new Helicopter(modelMatrix);
-    //esfera = new Sphere(modelMatrix);
+    helicopterContainer = new HelicopterContainer(modelMatrix);
+    helicopterControllerInstance = new HelicopterController(helicopterContainer);
+
+    let mAleta = mat4.create();
+    mat4.translate(mAleta, modelMatrix, [-2, 0, -5]);
+    aleta = new Fin(mAleta);
 }
 
 function updateModelMatrix(newModelMatriz) {

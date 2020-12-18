@@ -1,9 +1,10 @@
-class KeyboardAndMouseEvents {
-    constructor() {
+class CameraController {
+    constructor(camera) {
         this.previousClientX = 0;
         this.previousClientY = 0;
         this.isMouseDown = false;
         this.mouse = {x: 0, y: 0};
+        this.camera = camera;
 
         let body = $("body");
         body.mousemove(function(e){
@@ -21,27 +22,17 @@ class KeyboardAndMouseEvents {
             this.previousClientY = 0;
         }.bind(this));
 
-        body.on("keydown",function(event){
-            console.log(event);
-
-            if (event.keyCode===67){
-                alert ("presionaron la tecla C !!!")
-            }
-
-        }.bind(this));
-
         body.on('wheel mousewheel', function(event){
             if(event.originalEvent.deltaY < 0){
-                camera.zoomIn();
+                this.camera.zoomIn();
             }
             else {
-                camera.zoomOut();
+                this.camera.zoomOut();
             }
-            console.log(event.originalEvent.deltaY);
-        });
+        }.bind(this));
     }
 
-    handler() {
+    update() {
         if(this.isMouseDown) this.rotateCamera();
     };
 
@@ -55,8 +46,8 @@ class KeyboardAndMouseEvents {
         this.previousClientY = this.mouse.y;
 
         if (deltaX !== 0 || deltaY !== 0) {
-            camera.increaseAlpha(deltaX);
-            camera.increaseBeta(deltaY);
+            this.camera.increaseAlpha(deltaX);
+            this.camera.increaseBeta(deltaY);
         }
     }
 }

@@ -33,6 +33,57 @@ class Object3D {
     setColor(color) {
         this.color = color;
     }
+
+    setPosition(p) {
+        let m = mat4.create();
+        mat4.identity(m);
+        mat4.translate(m, m, p);
+        this.setM(m);
+    }
+
+    getPosition() {
+        let pos = vec3.create();
+        vec3.transformMat4(pos, vec3.fromValues(0,0,0), this.m);
+        return pos;
+    }
+}
+
+class HelicopterContainer extends Object3D {
+    constructor(m) {
+        let children = [];
+        children.push(new Helicopter(m));
+        super(m, null, children);
+        this.yaw = 0;
+        this.pitch = 0;
+        this.roll = 0;
+        this.setM(m);
+    }
+
+    setM(m) {
+        let mHelicopterController = mat4.create();
+        mat4.rotate(mHelicopterController, m, this.yaw, [0, 1, 0]);
+        super.setM(mHelicopterController);
+
+        let mHelicopter = mat4.create();
+        mat4.rotate(mHelicopter, mHelicopterController, this.pitch, [0, 0, 1]);
+        mat4.rotate(mHelicopter, mHelicopter, this.roll, [1, 0, 0]);
+        this.children[0].setM(mHelicopter);
+        console.log(this.yaw);
+        console.log(this.pitch);
+        console.log(this.roll);
+    }
+
+    setYaw(yaw) {
+        this.yaw = yaw;
+    }
+
+    setPitch(pitch) {
+        this.pitch = pitch;
+    }
+
+    setRoll(roll) {
+        this.roll = roll;
+    }
 }
 
 class Helicopter extends Object3D {
@@ -50,32 +101,35 @@ class Helicopter extends Object3D {
     }
 
     setM(m) {
-        super.setM(m);
+        let mHelicopter = mat4.create();
+        // lo roto para que coincida en orientacion con los movimientos (en helicopterController)
+        mat4.rotate(mHelicopter, m, Math.PI, [0,1,0]);
+        super.setM(mHelicopter);
         let mRotorArm1 = mat4.create();
-        mat4.translate(mRotorArm1, m, [-CABIN_LENGTH/7,(CABIN_HEIGHT/3),CABIN_WIDTH/2]);
+        mat4.translate(mRotorArm1, mHelicopter, [-CABIN_LENGTH/7,(CABIN_HEIGHT/3),CABIN_WIDTH/2]);
         this.children[0].setM(mRotorArm1);
         let mRotorArm2 = mat4.create();
-        mat4.translate(mRotorArm2, m, [CABIN_LENGTH/4,(CABIN_HEIGHT/3),CABIN_WIDTH/2]);
+        mat4.translate(mRotorArm2, mHelicopter, [CABIN_LENGTH/4,(CABIN_HEIGHT/3),CABIN_WIDTH/2]);
         this.children[1].setM(mRotorArm2);
         let mRotorArm3 = mat4.create();
-        mat4.translate(mRotorArm3, m, [-CABIN_LENGTH/7,(CABIN_HEIGHT/3),-CABIN_WIDTH/2]);
+        mat4.translate(mRotorArm3, mHelicopter, [-CABIN_LENGTH/7,(CABIN_HEIGHT/3),-CABIN_WIDTH/2]);
         mat4.rotate(mRotorArm3, mRotorArm3, Math.PI, [0,1,0]);
         this.children[2].setM(mRotorArm3);
         let mRotorArm4 = mat4.create();
-        mat4.translate(mRotorArm4, m, [CABIN_LENGTH/4,(CABIN_HEIGHT/3),-CABIN_WIDTH/2]);
+        mat4.translate(mRotorArm4, mHelicopter, [CABIN_LENGTH/4,(CABIN_HEIGHT/3),-CABIN_WIDTH/2]);
         mat4.rotate(mRotorArm4, mRotorArm4, Math.PI, [0,1,0]);
         this.children[3].setM(mRotorArm4);
 
         let mTail = mat4.create();
-        mat4.translate(mTail, m, [CABIN_LENGTH*0.45,CABIN_HEIGHT/4,0]);
+        mat4.translate(mTail, mHelicopter, [CABIN_LENGTH*0.45,CABIN_HEIGHT/4,0]);
         this.children[4].setM(mTail);
 
         let mSkid1 = mat4.create();
-        mat4.translate(mSkid1, m, [-CABIN_LENGTH*0.09,-CABIN_HEIGHT*0.75,CABIN_WIDTH*0.4]);
+        mat4.translate(mSkid1, mHelicopter, [-CABIN_LENGTH*0.09,-CABIN_HEIGHT*0.75,CABIN_WIDTH*0.4]);
         mat4.rotate(mSkid1, mSkid1, Math.PI/2, [0,0,-1]);
         this.children[5].setM(mSkid1);
         let mSkid2 = mat4.create();
-        mat4.translate(mSkid2, m, [-CABIN_LENGTH*0.09,-CABIN_HEIGHT*0.75,-CABIN_WIDTH*0.4]);
+        mat4.translate(mSkid2, mHelicopter, [-CABIN_LENGTH*0.09,-CABIN_HEIGHT*0.75,-CABIN_WIDTH*0.4]);
         mat4.rotate(mSkid2, mSkid2, Math.PI, [0,1,0]);
         mat4.rotate(mSkid2, mSkid2, Math.PI/2, [0,0,-1]);
         this.children[6].setM(mSkid2);
