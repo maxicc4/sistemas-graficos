@@ -354,7 +354,7 @@ class SkidCylinder extends Object3D {
 class Terrain extends Object3D {
     constructor(m) {
         let children = [];
-        super(m, new Grid3D(new Plane(100, 100), 100, 100), children);
+        super(m, new Grid3D(new Plane(50, 50), 100, 100), children);
         this.setM(m);
     }
 }
