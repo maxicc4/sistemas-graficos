@@ -16,8 +16,8 @@ class Object3D {
     draw() {
         updateModelMatrix(this.m);
         setupVertexShaderMatrix();
-        let colorUniform  = gl.getUniformLocation(glProgram, "uColor");
-        gl.uniform3fv(colorUniform, this.color);
+        gl.uniform3fv(gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), "uColor"), this.color);
+        gl.uniform1i(gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), "uSampler"), 0);
         if (this.grid3D != null) {
             this.grid3D.drawGeometry();
         }
@@ -348,5 +348,13 @@ class SkidCylinder extends Object3D {
         super(m, new Grid3D(new Cylinder(CABIN_LENGTH*0.015, CABIN_HEIGHT/3, false), 16, 20), children);
         this.setM(m);
         this.setColor([0.2,0.2,0.2]);
+    }
+}
+
+class Terrain extends Object3D {
+    constructor(m) {
+        let children = [];
+        super(m, new Grid3D(new Plane(100, 100), 100, 100), children);
+        this.setM(m);
     }
 }

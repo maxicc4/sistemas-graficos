@@ -221,8 +221,8 @@ class Grid3D {
         gl.bindBuffer(gl.ARRAY_BUFFER, triangleMesh.webgl_position_buffer);
         gl.vertexAttribPointer(glProgram.vertexPositionAttribute, triangleMesh.webgl_position_buffer.itemSize, gl.FLOAT, false, 0, 0);
 
-        //gl.bindBuffer(gl.ARRAY_BUFFER, triangleMesh.webgl_uvs_buffer);
-        //gl.vertexAttribPointer(glProgram.textureCoordAttribute, triangleMesh.webgl_uvs_buffer.itemSize, gl.FLOAT, false, 0, 0);
+        gl.bindBuffer(gl.ARRAY_BUFFER, triangleMesh.webgl_uvs_buffer);
+        gl.vertexAttribPointer(glProgram.vertexUVAttribute, triangleMesh.webgl_uvs_buffer.itemSize, gl.FLOAT, false, 0, 0);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, triangleMesh.webgl_normal_buffer);
         gl.vertexAttribPointer(glProgram.vertexNormalAttribute, triangleMesh.webgl_normal_buffer.itemSize, gl.FLOAT, false, 0, 0);

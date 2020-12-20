@@ -4,10 +4,11 @@ var vec3=glMatrix.vec3;
 var gl = null,
     canvas = null,
     glProgram = null,
-    fragmentShader = null,
-    vertexShader = null,
+    glProgramTerrain = null,
     vertexShaderSource = null,
-    fragmentShaderSource = null;
+    vertexShaderTerrainSource = null,
+    fragmentShaderSource = null,
+    fragmentShaderTextureSource = null;
 
 var vertexPositionAttribute = null,
     trianglesVerticeBuffer = null,
@@ -21,7 +22,7 @@ var projMatrix = mat4.create();
 var normalMatrix = mat4.create();
 var rotate_angle = -1.57078;
 
-var helicopterContainer, aleta;
+var helicopterContainer, aleta, terrain;
 
 var helicopterControllerInstance;
 
@@ -40,6 +41,7 @@ function initWebGL(){
         setupWebGL();
         initShaders();
         createObjects3D();
+        createAndLoadTextures();
         setupVertexShaderMatrix();
         tick();
     }else{
@@ -62,7 +64,7 @@ function setupWebGL(){
 }
 
 function loadShadersAndInitWebGL(){
-    $.when(loadVS(), loadFS()).done(function(res1,res2){
+    $.when(loadVS(), loadVSTerrain(), loadFS(), loadFSTexture()).done(function(res1,res2){
         initWebGL();
     });
 
@@ -76,6 +78,16 @@ function loadShadersAndInitWebGL(){
         });
     }
 
+    function loadVSTerrain() {
+        return  $.ajax({
+            url: "shaders/vertex-shader-terrain.glsl",
+            success: function(result){
+                console.log('vertex shader terrain load');
+                vertexShaderTerrainSource=result;
+            }
+        });
+    }
+
     function loadFS() {
         return  $.ajax({
             url: "shaders/fragment-shader.glsl",
@@ -85,31 +97,52 @@ function loadShadersAndInitWebGL(){
             }
         });
     }
+
+    function loadFSTexture() {
+        return  $.ajax({
+            url: "shaders/fragment-shader-texture.glsl",
+            success: function(result){
+                console.log('fragment shader texture load');
+                fragmentShaderTextureSource=result;
+            }
+        });
+    }
 }
 
 function initShaders() {
     //compile shaders
-    vertexShader = makeShader(vertexShaderSource, gl.VERTEX_SHADER);
-    fragmentShader = makeShader(fragmentShaderSource, gl.FRAGMENT_SHADER);
+    let vertexShader = makeShader(vertexShaderSource, gl.VERTEX_SHADER);
+    let vertexShaderTerrain = makeShader(vertexShaderTerrainSource, gl.VERTEX_SHADER);
+    let fragmentShader = makeShader(fragmentShaderSource, gl.FRAGMENT_SHADER);
+    let fragmentShaderTexture = makeShader(fragmentShaderTextureSource, gl.FRAGMENT_SHADER);
 
     //create program
     glProgram = gl.createProgram();
-
-    //attach and link shaders to the program
+    glProgramTerrain = gl.createProgram();
     gl.attachShader(glProgram, vertexShader);
     gl.attachShader(glProgram, fragmentShader);
-    gl.linkProgram(glProgram);
+    gl.attachShader(glProgramTerrain, vertexShaderTerrain);
+    gl.attachShader(glProgramTerrain, fragmentShaderTexture);
 
-    if (!gl.getProgramParameter(glProgram, gl.LINK_STATUS)) {
-        alert("Unable to initialize the shader program.");
+    let programs = [glProgram, glProgramTerrain];
+
+    for (let i=0; i < programs.length; i++) {
+        gl.linkProgram(programs[i]);
+
+        if (!gl.getProgramParameter(programs[i], gl.LINK_STATUS)) {
+            alert("Unable to initialize the shader program."+i);
+        }
+
+        gl.useProgram(programs[i]);
+        programs[i].vertexPositionAttribute = gl.getAttribLocation(programs[i], "aVertexPosition");
+        gl.enableVertexAttribArray(programs[i].vertexPositionAttribute);
+        programs[i].vertexNormalAttribute = gl.getAttribLocation(programs[i], "aVertexNormal");
+        gl.enableVertexAttribArray(programs[i].vertexNormalAttribute);
+        programs[i].vertexUVAttribute = gl.getAttribLocation(programs[i], "aUV");
+        gl.enableVertexAttribArray(programs[i].vertexUVAttribute);
     }
-    //use program
-    gl.useProgram(glProgram);
 
-    glProgram.vertexPositionAttribute = gl.getAttribLocation(glProgram, "aVertexPosition");
-    gl.enableVertexAttribArray(glProgram.vertexPositionAttribute);
-    glProgram.vertexNormalAttribute = gl.getAttribLocation(glProgram, "aVertexNormal");
-    gl.enableVertexAttribArray(glProgram.vertexNormalAttribute);
+    gl.useProgram(glProgram);
 }
 
 function makeShader(src, type){
@@ -125,10 +158,10 @@ function makeShader(src, type){
 }
 
 function setupVertexShaderMatrix(){
-    var modelMatrixUniform = gl.getUniformLocation(glProgram, "modelMatrix");
-    var viewMatrixUniform  = gl.getUniformLocation(glProgram, "viewMatrix");
-    var projMatrixUniform  = gl.getUniformLocation(glProgram, "projMatrix");
-    var normalMatrixUniform  = gl.getUniformLocation(glProgram, "normalMatrix");
+    var modelMatrixUniform = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), "modelMatrix");
+    var viewMatrixUniform  = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), "viewMatrix");
+    var projMatrixUniform  = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), "projMatrix");
+    var normalMatrixUniform  = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), "normalMatrix");
 
     gl.uniformMatrix4fv(modelMatrixUniform, false, modelMatrix);
     gl.uniformMatrix4fv(viewMatrixUniform, false, cameraControllerInstance.getCamera().getViewMatrix());
@@ -140,22 +173,9 @@ function drawScene(){
     //setupVertexShaderMatrix();
     helicopterContainer.draw();
     aleta.draw();
-    //mat4.translate(modelMatrix, modelMatrix, [2.0, 0.0, 0.0]);
-    //setupVertexShaderMatrix();
-    //esfera.draw();
-    /*
-    vertexPositionAttribute = gl.getAttribLocation(glProgram, "aVertexPosition");
-    gl.enableVertexAttribArray(vertexPositionAttribute);
-    gl.bindBuffer(gl.ARRAY_BUFFER, trianglesVerticeBuffer);
-    gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
-
-    vertexNormalAttribute = gl.getAttribLocation(glProgram, "aVertexNormal");
-    gl.enableVertexAttribArray(vertexNormalAttribute);
-    gl.bindBuffer(gl.ARRAY_BUFFER, trianglesNormalBuffer);
-    gl.vertexAttribPointer(vertexNormalAttribute, 3, gl.FLOAT, false, 0, 0);
-
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, trianglesIndexBuffer);
-    gl.drawElements( gl.TRIANGLE_STRIP, trianglesIndexBuffer.number_vertex_point, gl.UNSIGNED_SHORT, 0);*/
+    gl.useProgram(glProgramTerrain);
+    terrain.draw();
+    gl.useProgram(glProgram);
 }
 
 function animate(){
@@ -177,6 +197,9 @@ function tick(){
 function createObjects3D() {
     helicopterContainer = new HelicopterContainer(modelMatrix);
     helicopterControllerInstance = new HelicopterController(helicopterContainer);
+    let mTerrain = mat4.create();
+    mat4.translate(mTerrain, modelMatrix, [0, -CABIN_HEIGHT, 0]);
+    terrain = new Terrain(mTerrain);
 
     cameraControllerInstance = new CameraController( new OrbitalCamera(5, helicopterContainer) );
 
@@ -194,4 +217,24 @@ function updateModelMatrix(newModelMatriz) {
     mat4.multiply(normalMatrix, viewMatrix, modelMatrix);
     mat4.invert(normalMatrix, normalMatrix);
     mat4.transpose(normalMatrix, normalMatrix);
+}
+
+function createAndLoadTextures() {
+    let texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+
+    // Fill the texture with a 1x1 blue pixel.
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+        new Uint8Array([0, 0, 255, 255]));
+
+    // Asynchronously load an image
+    let image = new Image();
+    image.src = "img/heightmap2.png";
+    image.addEventListener('load', function() {
+        // Now that the image has loaded make copy it to the texture.
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,gl.UNSIGNED_BYTE, image);
+        gl.generateMipmap(gl.TEXTURE_2D);
+        console.log('textura cargada');
+    });
 }
