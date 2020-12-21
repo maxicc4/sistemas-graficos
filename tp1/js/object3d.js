@@ -51,6 +51,12 @@ class Object3D {
         vec3.transformMat4(pos, pos, this.m);
         return pos;
     }
+
+    translate(vec) {
+        let newM = mat4.create();
+        mat4.translate(newM, this.m, vec);
+        this.setM(newM);
+    }
 }
 
 class HelicopterContainer extends Object3D {
@@ -437,5 +443,13 @@ class SkySphere extends Object3D {
         lighting = false;
         super.draw();
         lighting = true;
+    }
+}
+
+class Heliport extends Object3D {
+    constructor(m) {
+        let children = [];
+        super(m, new Grid3D(new BoxSurface(CABIN_LENGTH*4, CABIN_LENGTH*4, CABIN_WIDTH*0.2), 8, 4), children);
+        this.setM(m);
     }
 }

@@ -24,7 +24,7 @@ var projMatrix = mat4.create();
 var normalMatrix = mat4.create();
 var rotate_angle = -1.57078;
 
-var helicopterContainer, terrain;
+var helicopterContainer, terrain, heliport;
 
 var helicopterControllerInstance;
 
@@ -177,6 +177,7 @@ function drawScene(){
     //setupVertexShaderMatrix();
     helicopterContainer.draw();
     terrain.draw();
+    heliport.draw();
 }
 
 function animate(){
@@ -191,19 +192,23 @@ function animate(){
         posHelicopter[0] = posHelicopter[0] + sizePlot;
         helicopterControllerInstance.setPosition(posHelicopter);
         terrain.decreaseOffsetU();
+        heliport.translate(vec3.fromValues(sizePlot,0,0));
     } else if(posTerrain[0]-posHelicopter[0] < -halfSizePlot) {
         posHelicopter[0] = posHelicopter[0] - sizePlot;
         helicopterControllerInstance.setPosition(posHelicopter);
         terrain.increaseOffsetU();
+        heliport.translate(vec3.fromValues(-sizePlot,0,0));
     }
     if ( posTerrain[2]-posHelicopter[2] > halfSizePlot ) {
         posHelicopter[2] = posHelicopter[2] + sizePlot;
         helicopterControllerInstance.setPosition(posHelicopter);
         terrain.decreaseOffsetV();
+        heliport.translate(vec3.fromValues(0,0,sizePlot));
     } else if(posTerrain[2]-posHelicopter[2] < -halfSizePlot) {
         posHelicopter[2] = posHelicopter[2] - sizePlot;
         helicopterControllerInstance.setPosition(posHelicopter);
         terrain.increaseOffsetV();
+        heliport.translate(vec3.fromValues(0,0,-sizePlot));
     }
 
     /*let newModelMatrix = mat4.create();
@@ -224,6 +229,7 @@ function createObjects3D() {
     let mTerrain = mat4.create();
     mat4.translate(mTerrain, modelMatrix, [0, -CABIN_HEIGHT, 0]);
     terrain = new Terrain(mTerrain);
+    heliport = new Heliport(mTerrain);
 
     cameraControllerInstance = new CameraController( new OrbitalCamera(5, helicopterContainer) );
 }

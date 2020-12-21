@@ -294,3 +294,85 @@ class Cylinder extends Surface {
         return [u, v];
     }
 }
+
+class BoxSurface extends Surface {
+    constructor(width, height, length) {
+        super();
+        this.width = width;
+        this.height = height;
+        this.length = length;
+    }
+
+    getPosition(u, v) {
+        let position;
+        let p0, p1;
+        if (u >= 0 && u <= 0.25) {
+            p0 = {x: -this.width/2, y: -this.height/2};
+            p1 = {x: -this.width/2, y: this.height/2};
+            position = vec3.fromValues(
+                (1-u/0.25)*p0.x + (u/0.25)*p1.x,
+                v*this.length,
+                (1-u/0.25)*p0.y + (u/0.25)*p1.y
+            );
+        } else if (u > 0.25 && u <= 0.5) {
+            p0 = {x: -this.width/2, y: this.height/2};
+            p1 = {x: this.width/2, y: this.height/2};
+            position = vec3.fromValues(
+                (1-(u-0.25)/0.25)*p0.x + ((u-0.25)/0.25)*p1.x,
+                v*this.length,
+                (1-(u-0.25)/0.25)*p0.y + ((u-0.25)/0.25)*p1.y
+            );
+        } else if (u > 0.5 && u <= 0.75) {
+            p0 = {x: this.width/2, y: this.height/2};
+            p1 = {x: this.width/2, y: -this.height/2};
+            position = vec3.fromValues(
+                (1-(u-0.5)/0.25)*p0.x + ((u-0.5)/0.25)*p1.x,
+                v*this.length,
+                (1-(u-0.5)/0.25)*p0.y + ((u-0.5)/0.25)*p1.y
+            );
+        } else if (u > 0.75 && u <= 1) {
+            p0 = {x: this.width/2, y: -this.height/2};
+            p1 = {x: -this.width/2, y: -this.height/2};
+            position = vec3.fromValues(
+                (1-(u-0.75)/0.25)*p0.x + ((u-0.75)/0.25)*p1.x,
+                v*this.length,
+                (1-(u-0.75)/0.25)*p0.y + ((u-0.75)/0.25)*p1.y
+            );
+        }
+
+        return position;
+    }
+
+    getNormal(u, v) {
+        if (u >= 0 && u <= 0.25) {
+            return vec3.fromValues(-1,0,0);
+        } else if (u > 0.25 && u <= 0.5) {
+            return vec3.fromValues(0,0,1);
+        } else if (u > 0.5 && u <= 0.75) {
+            return vec3.fromValues(1,0,0);
+        } else if (u > 0.75 && u <= 1) {
+            return vec3.fromValues(0,0,-1);
+        }
+    }
+
+    haveCaps() {
+        return true;
+    }
+
+    // v deberia ser 0 o 1
+    getCapPosition(v) {
+        return [0, v * this.length, 0];
+    }
+
+    // v deberia ser 0 o 1
+    getCapNormal(v) {
+        let vecNormal;
+        vecNormal = vec3.fromValues(0, v - 0.5, 0);
+        vec3.normalize(vecNormal, vecNormal);
+        return vecNormal;
+    }
+
+    getCapTextureCoordinates(u, v) {
+        return [u, v];
+    }
+}
