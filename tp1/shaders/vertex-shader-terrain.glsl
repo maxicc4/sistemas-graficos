@@ -10,6 +10,9 @@ uniform mat4 projMatrix;
 
 uniform mat4 normalMatrix;
 
+uniform vec2 uOffsetUV;
+uniform float uScaleUV;
+
 varying vec3 vNormal;
 varying vec3 vPosWorld;
 varying vec2 vUV;
@@ -17,12 +20,12 @@ varying vec2 vUV;
 uniform sampler2D uSampler;
 
 const float epsilon=0.01;
-const float amplitud=4.0;
+const float amplitud=40.0;
 
 void main(void) {
     vec3 position = aVertexPosition;
     vec3 normal = aVertexNormal;
-    vec2 uv = aUV;
+    vec2 uv = uOffsetUV + aUV*uScaleUV;
 
     vec4 center = texture2D(uSampler, vec2(uv.s, uv.t));
     vec4 masU = texture2D(uSampler, vec2(uv.s+epsilon, uv.t));

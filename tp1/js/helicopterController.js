@@ -14,13 +14,11 @@ class HelicopterController {
         this.deltaSpeed=0.01;
         this.deltaAngle=0.03;
 
-        this.maxSpeed=2;
-        this.maxAltitude=300;
+        this.maxSpeed=1;
+        this.maxAltitude=PLOT_SIZE_TERRAIN*0.75;
         this.minAltitude=0;
 
-        this.positionX=0;
-        this.positionY=0;
-        this.positionZ=0;
+        this.position = vec3.fromValues(0,0,0);
 
         this.speed=0;
         this.altitude=this.minAltitude;
@@ -122,9 +120,9 @@ class HelicopterController {
         let directionX=Math.cos(-this.angle)*this.speed;
         let directionZ=Math.sin(-this.angle)*this.speed;
 
-        this.positionX += directionX;
-        this.positionZ += directionZ;
-        this.positionY = this.altitude;
+        this.position[0] += directionX;
+        this.position[2] += directionZ;
+        this.position[1] = this.altitude;
 
         // se actualizan las posiciones y las rotaciones de helicopterContainer
         this.helicopterContainer.setYaw(this.getYaw());
@@ -136,11 +134,12 @@ class HelicopterController {
     }
 
     getPosition() {
-        return vec3.fromValues(
-            this.positionX,
-            this.positionY,
-            this.positionZ
-        );
+        return this.position;
+    }
+
+    setPosition(p) {
+        this.position = p;
+        this.helicopterContainer.setPosition(p);
     }
 
     getYaw() {

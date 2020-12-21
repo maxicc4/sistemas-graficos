@@ -5,6 +5,10 @@ const CABIN_WIDTH = 0.6;
 const CABIN_HEIGHT = 0.65;
 const NUMBER_OF_BLADES = 12;
 
+const NUM_ROWS_GRID_TERRAIN = 200;
+const NUM_COLS_GRID_TERRAIN = 200;
+const PLOT_SIZE_TERRAIN = 150;
+
 class Object3D {
     constructor(m, grid3D, children) {
         this.grid3D = grid3D;
@@ -53,6 +57,7 @@ class HelicopterContainer extends Object3D {
     constructor(m) {
         let children = [];
         children.push(new Helicopter(m));
+        children.push(new SkySphere(m));
         super(m, null, children);
         this.yaw = 0;
         this.pitch = 0;
@@ -69,6 +74,8 @@ class HelicopterContainer extends Object3D {
         mat4.rotate(mHelicopter, mHelicopterController, this.pitch, [0, 0, 1]);
         mat4.rotate(mHelicopter, mHelicopter, this.roll, [1, 0, 0]);
         this.children[0].setM(mHelicopter);
+
+        this.children[1].setM(m);
     }
 
     setYaw(yaw) {
@@ -354,7 +361,81 @@ class SkidCylinder extends Object3D {
 class Terrain extends Object3D {
     constructor(m) {
         let children = [];
-        super(m, new Grid3D(new Plane(50, 50), 100, 100), children);
+        super(
+            m,
+            new Grid3D(
+                new Plane(PLOT_SIZE_TERRAIN*3, PLOT_SIZE_TERRAIN*3),
+                NUM_ROWS_GRID_TERRAIN,
+                NUM_COLS_GRID_TERRAIN
+            ),
+            children
+        );
         this.setM(m);
+        this.offsetUV = vec2.fromValues(0.625,0.375);
+        this.setSizeTexture(1024);
+    }
+
+    draw() {
+        gl.useProgram(glProgramTerrain);
+        gl.uniform2fv(gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), "uOffsetUV"), this.offsetUV);
+        gl.uniform1f(gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), "uScaleUV"), this.scaleUV);
+        super.draw();
+        gl.useProgram(glProgram);
+    }
+
+    setSizeTexture(sizeTexture) {
+        this.sizeTexture = sizeTexture;
+        this.numberOfPlots = sizeTexture / 256;   //por columnas es igual, es cuadrada
+        this.plotSizeUV = 1 / this.numberOfPlots;
+        this.scaleUV = this.plotSizeUV * 3;
+    }
+
+    getPlotSizeInWorld() {
+        return PLOT_SIZE_TERRAIN;
+    }
+
+    increaseOffsetU() {
+        this.offsetUV[0] = this.offsetUV[0] + this.plotSizeUV;
+        if (this.offsetUV[0] >= 1) {
+            this.offsetUV[0] = 0;
+        }
+        console.log(this.offsetUV);
+    }
+    decreaseOffsetU() {
+        this.offsetUV[0] = this.offsetUV[0] - this.plotSizeUV;
+        if (this.offsetUV[0] < 0) {
+            this.offsetUV[0] = 1;
+        }
+        console.log(this.offsetUV);
+    }
+    increaseOffsetV() {
+        this.offsetUV[1] = this.offsetUV[1] + this.plotSizeUV;
+        if (this.offsetUV[1] >= 1) {
+            this.offsetUV[1] = 0;
+        }
+        console.log(this.offsetUV);
+    }
+    decreaseOffsetV() {
+        this.offsetUV[1] = this.offsetUV[1] - this.plotSizeUV;
+        if (this.offsetUV[1] < 0) {
+            this.offsetUV[1] = 1;
+        }
+        console.log(this.offsetUV);
+    }
+}
+
+class SkySphere extends Object3D {
+    constructor(m) {
+        let children = [];
+        super(m, new Grid3D(new SphereSurface(PLOT_SIZE_TERRAIN), 50, 50), children);
+        this.setM(m);
+        this.setColor([0.14,0.89,0.93]);
+    }
+
+    draw() {
+        //gl.useProgram(glProgram);
+        lighting = false;
+        super.draw();
+        lighting = true;
     }
 }
