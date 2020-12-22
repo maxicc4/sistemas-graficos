@@ -114,6 +114,10 @@ class HelicopterContainer extends Object3D {
         vec3.normalize(pos, pos);
         return pos;
     }
+
+    setBladeRotation(rotation) {
+        this.children[0].setBladeRotation(rotation);
+    }
 }
 
 class Helicopter extends Object3D {
@@ -164,6 +168,12 @@ class Helicopter extends Object3D {
         mat4.rotate(mSkid2, mSkid2, Math.PI/2, [0,0,-1]);
         this.children[6].setM(mSkid2);
     }
+
+    setBladeRotation(rotation) {
+        for (let i=0; i<4; i++) {
+            this.children[i].setBladeRotation(rotation);
+        }
+    }
 }
 
 class RotorArm extends Object3D {
@@ -185,6 +195,10 @@ class RotorArm extends Object3D {
         //mat4.scale(m1, m1, [0.25,0.25,0.25]);
         this.children[0].setM(m1);
     }
+
+    setBladeRotation(rotation) {
+        this.children[0].setBladeRotation(rotation);
+    }
 }
 
 class Arm extends Object3D {
@@ -202,6 +216,10 @@ class Arm extends Object3D {
         mat4.rotate(mPropeller, mPropeller, Math.PI/2, [0,0,1]);
         this.children[0].setM(mPropeller);
     }
+
+    setBladeRotation(rotation) {
+        this.children[0].setBladeRotation(rotation);
+    }
 }
 
 class Propeller extends Object3D {
@@ -217,6 +235,10 @@ class Propeller extends Object3D {
         super.setM(m);
         this.children[0].setM(m);
     }
+
+    setBladeRotation(rotation) {
+        this.children[0].setBladeRotation(rotation);
+    }
 }
 
 class PropellerShaft extends Object3D {
@@ -227,15 +249,28 @@ class PropellerShaft extends Object3D {
         }
         super(m, new Grid3D(new Cylinder(CABIN_LENGTH*0.025, CABIN_WIDTH*0.24, true), 16, 20), children);
         this.setM(m);
+        this.bladeRotation = 0;
     }
 
     setM(m) {
-        super.setM(m);
+        let mRotationBlades = mat4.create();
+        mat4.rotate(mRotationBlades, m, this.bladeRotation, [0,1,0]);
+        super.setM(mRotationBlades);
         let mBlade = mat4.create();
         let rad = 2*Math.PI/NUMBER_OF_BLADES;
         for (let i=0; i<NUMBER_OF_BLADES; i++) {
-            mat4.rotate(mBlade, m, rad*i, [0,1,0]);
+            mat4.rotate(mBlade, mRotationBlades, rad*i, [0,1,0]);
             this.children[i].setM(mBlade);
+        }
+    }
+
+    setBladeRotation(rotation) {
+        this.bladeRotation += rotation;
+        while (this.bladeRotation >= 2*Math.PI) {
+            this.bladeRotation -= 2*Math.PI;
+        }
+        while (this.bladeRotation <= -2*Math.PI) {
+            this.bladeRotation += 2*Math.PI;
         }
     }
 }

@@ -103,10 +103,11 @@ class HelicopterController {
         if (this.zArrow!==0) {
             this.angleTarget+=this.zArrow*this.deltaAngle*speedSign;
         }        
-
+        let angleRotationBlades = 0;
         if (this.yArrow!==0) {
             this.altitudeTarget+=this.yArrow*this.deltaAltitude;
             this.altitudeTarget=Math.max(this.minAltitude,Math.min(this.maxAltitude,this.altitudeTarget));
+            angleRotationBlades += 0.128;
         }
 
         this.roll=-(this.angleTarget-this.angle)*0.4;
@@ -131,6 +132,9 @@ class HelicopterController {
 
         let p = this.getPosition();
         this.helicopterContainer.setPosition(p);
+
+        angleRotationBlades += 0.6*this.speed;
+        this.helicopterContainer.setBladeRotation(angleRotationBlades);
     }
 
     getPosition() {
