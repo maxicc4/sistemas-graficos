@@ -6,10 +6,6 @@ var gl = null,
     canvas = null,
     glProgram = null,
     glProgramTerrain = null,
-    vertexShaderSource = null,
-    vertexShaderTerrainSource = null,
-    fragmentShaderSource = null,
-    fragmentShaderTextureSource = null,
     lighting = true;
 
 var vertexPositionAttribute = null,
@@ -65,84 +61,41 @@ function setupWebGL(){
     mat4.identity(modelMatrix);
 }
 
-function loadShadersAndInitWebGL(){
-    $.when(loadVS(), loadVSTerrain(), loadFS(), loadFSTexture()).done(function(res1,res2){
-        initWebGL();
-    });
-
-    function loadVS() {
-        return  $.ajax({
-            url: "shaders/vertex-shader.glsl",
-            success: function(result){
-                console.log('vertex shader load');
-                vertexShaderSource=result;
-            }
-        });
-    }
-
-    function loadVSTerrain() {
-        return  $.ajax({
-            url: "shaders/vertex-shader-terrain.glsl",
-            success: function(result){
-                console.log('vertex shader terrain load');
-                vertexShaderTerrainSource=result;
-            }
-        });
-    }
-
-    function loadFS() {
-        return  $.ajax({
-            url: "shaders/fragment-shader.glsl",
-            success: function(result){
-                console.log('fragment shader load');
-                fragmentShaderSource=result;
-            }
-        });
-    }
-
-    function loadFSTexture() {
-        return  $.ajax({
-            url: "shaders/fragment-shader-texture.glsl",
-            success: function(result){
-                console.log('fragment shader texture load');
-                fragmentShaderTextureSource=result;
-            }
-        });
-    }
-}
-
 function initShaders() {
     //compile shaders
-    let vertexShader = makeShader(vertexShaderSource, gl.VERTEX_SHADER);
-    let vertexShaderTerrain = makeShader(vertexShaderTerrainSource, gl.VERTEX_SHADER);
-    let fragmentShader = makeShader(fragmentShaderSource, gl.FRAGMENT_SHADER);
-    let fragmentShaderTexture = makeShader(fragmentShaderTextureSource, gl.FRAGMENT_SHADER);
+    let vertexShader = makeShader($("#vertex-shader").text(), gl.VERTEX_SHADER);
+    let vertexShaderTerrain = makeShader($("#vertex-shader-terrain").text(), gl.VERTEX_SHADER);
+    let fragmentShader = makeShader($("#fragment-shader").text(), gl.FRAGMENT_SHADER);
+    let fragmentShaderTexture = makeShader($("#fragment-shader-texture").text(), gl.FRAGMENT_SHADER);
 
     //create program
     glProgram = gl.createProgram();
-    glProgramTerrain = gl.createProgram();
     gl.attachShader(glProgram, vertexShader);
     gl.attachShader(glProgram, fragmentShader);
+    gl.linkProgram(glProgram);
+    if (!gl.getProgramParameter(glProgram, gl.LINK_STATUS)) {
+        alert("Unable to initialize the shader glProgram.");
+    }
+    gl.useProgram(glProgram);
+    glProgram.vertexPositionAttribute = gl.getAttribLocation(glProgram, "aVertexPosition");
+    gl.enableVertexAttribArray(glProgram.vertexPositionAttribute);
+    glProgram.vertexNormalAttribute = gl.getAttribLocation(glProgram, "aVertexNormal");
+    gl.enableVertexAttribArray(glProgram.vertexNormalAttribute);
+
+
+    glProgramTerrain = gl.createProgram();
     gl.attachShader(glProgramTerrain, vertexShaderTerrain);
     gl.attachShader(glProgramTerrain, fragmentShaderTexture);
-
-    let programs = [glProgram, glProgramTerrain];
-
-    for (let i=0; i < programs.length; i++) {
-        gl.linkProgram(programs[i]);
-
-        if (!gl.getProgramParameter(programs[i], gl.LINK_STATUS)) {
-            alert("Unable to initialize the shader program."+i);
-        }
-
-        gl.useProgram(programs[i]);
-        programs[i].vertexPositionAttribute = gl.getAttribLocation(programs[i], "aVertexPosition");
-        gl.enableVertexAttribArray(programs[i].vertexPositionAttribute);
-        programs[i].vertexNormalAttribute = gl.getAttribLocation(programs[i], "aVertexNormal");
-        gl.enableVertexAttribArray(programs[i].vertexNormalAttribute);
-        programs[i].vertexUVAttribute = gl.getAttribLocation(programs[i], "aUV");
-        gl.enableVertexAttribArray(programs[i].vertexUVAttribute);
+    gl.linkProgram(glProgramTerrain);
+    if (!gl.getProgramParameter(glProgramTerrain, gl.LINK_STATUS)) {
+        alert("Unable to initialize the shader glProgramTerrain.");
     }
+    gl.useProgram(glProgramTerrain);
+    glProgramTerrain.vertexPositionAttribute = gl.getAttribLocation(glProgramTerrain, "aVertexPosition");
+    gl.enableVertexAttribArray(glProgramTerrain.vertexPositionAttribute);
+    glProgramTerrain.vertexUVAttribute = gl.getAttribLocation(glProgramTerrain, "aUV");
+    gl.enableVertexAttribArray(glProgramTerrain.vertexUVAttribute);
+
 
     gl.useProgram(glProgram);
 }

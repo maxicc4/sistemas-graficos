@@ -217,26 +217,30 @@ class Grid3D {
     }
 
     drawMesh(triangleMesh) {
+        let currentProgram = gl.getParameter(gl.CURRENT_PROGRAM);
         // Se configuran los buffers que alimentaron el pipeline
         gl.bindBuffer(gl.ARRAY_BUFFER, triangleMesh.webgl_position_buffer);
-        gl.vertexAttribPointer(glProgram.vertexPositionAttribute, triangleMesh.webgl_position_buffer.itemSize, gl.FLOAT, false, 0, 0);
+        gl.vertexAttribPointer(currentProgram.vertexPositionAttribute, triangleMesh.webgl_position_buffer.itemSize, gl.FLOAT, false, 0, 0);
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, triangleMesh.webgl_uvs_buffer);
-        gl.vertexAttribPointer(glProgram.vertexUVAttribute, triangleMesh.webgl_uvs_buffer.itemSize, gl.FLOAT, false, 0, 0);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, triangleMesh.webgl_normal_buffer);
-        gl.vertexAttribPointer(glProgram.vertexNormalAttribute, triangleMesh.webgl_normal_buffer.itemSize, gl.FLOAT, false, 0, 0);
+        if (currentProgram.vertexUVAttribute) {
+            gl.bindBuffer(gl.ARRAY_BUFFER, triangleMesh.webgl_uvs_buffer);
+            gl.vertexAttribPointer(currentProgram.vertexUVAttribute, triangleMesh.webgl_uvs_buffer.itemSize, gl.FLOAT, false, 0, 0);
+        }
+        if (currentProgram.vertexNormalAttribute) {
+            gl.bindBuffer(gl.ARRAY_BUFFER, triangleMesh.webgl_normal_buffer);
+            gl.vertexAttribPointer(currentProgram.vertexNormalAttribute, triangleMesh.webgl_normal_buffer.itemSize, gl.FLOAT, false, 0, 0);
+        }
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, triangleMesh.webgl_index_buffer);
 
         gl.drawElements(gl.TRIANGLE_STRIP, triangleMesh.webgl_index_buffer.numItems, gl.UNSIGNED_SHORT, 0);
         /*if (modo!="wireframe"){
-            gl.uniform1i(glProgram.useLightingUniform,(lighting=="true"));
+            gl.uniform1i(currentProgram.useLightingUniform,(lighting=="true"));
             gl.drawElements(gl.TRIANGLE_STRIP, triangleMesh.webgl_index_buffer.numItems, gl.UNSIGNED_SHORT, 0);
         }
 
         if (modo!="smooth") {
-            gl.uniform1i(glProgram.useLightingUniform,false);
+            gl.uniform1i(currentProgram.useLightingUniform,false);
             gl.drawElements(gl.LINE_STRIP, triangleMesh.webgl_index_buffer.numItems, gl.UNSIGNED_SHORT, 0);
         }*/
     }
