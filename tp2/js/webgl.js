@@ -208,7 +208,7 @@ function createAndLoadTextures() {
 
     // Asynchronously load an image
     let image = new Image();
-    image.src = "img/heightmapper-gimp.png";
+    image.src = "img/heightmap.png";
     image.addEventListener('load', function() {
         // Now that the image has loaded make copy it to the texture.
         gl.bindTexture(gl.TEXTURE_2D, texture);
