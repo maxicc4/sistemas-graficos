@@ -135,6 +135,7 @@ class HelicopterController {
 
         angleRotationBlades += 0.6*this.speed;
         this.helicopterContainer.setBladeRotation(angleRotationBlades);
+        this.helicopterContainer.setPropellerRotation(0.5*Math.PI*this.speed);
     }
 
     getPosition() {

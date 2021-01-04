@@ -118,6 +118,10 @@ class HelicopterContainer extends Object3D {
     setBladeRotation(rotation) {
         this.children[0].setBladeRotation(rotation);
     }
+
+    setPropellerRotation(rotation) {
+        this.children[0].setPropellerRotation(rotation);
+    }
 }
 
 class Helicopter extends Object3D {
@@ -174,6 +178,13 @@ class Helicopter extends Object3D {
             this.children[i].setBladeRotation(rotation);
         }
     }
+
+    setPropellerRotation(rotation) {
+        this.children[0].setPropellerRotation(rotation);
+        this.children[1].setPropellerRotation(rotation);
+        this.children[2].setPropellerRotation(-rotation);
+        this.children[3].setPropellerRotation(-rotation);
+    }
 }
 
 class RotorArm extends Object3D {
@@ -190,14 +201,15 @@ class RotorArm extends Object3D {
         let m1 = mat4.create();
         mat4.rotate(m1, m, -Math.PI/2, [0,0,1]);
         super.setM(m1);
-        let mArm = mat4.create();
-        //mat4.translate(mArm, m1, [0,0,CABIN_WIDTH/2]);
-        //mat4.scale(m1, m1, [0.25,0.25,0.25]);
         this.children[0].setM(m1);
     }
 
     setBladeRotation(rotation) {
         this.children[0].setBladeRotation(rotation);
+    }
+
+    setPropellerRotation(rotation) {
+        this.children[0].setPropellerRotation(rotation);
     }
 }
 
@@ -220,6 +232,10 @@ class Arm extends Object3D {
     setBladeRotation(rotation) {
         this.children[0].setBladeRotation(rotation);
     }
+
+    setPropellerRotation(rotation) {
+        this.children[0].setPropellerRotation(rotation);
+    }
 }
 
 class Propeller extends Object3D {
@@ -229,15 +245,29 @@ class Propeller extends Object3D {
         super(m, new Grid3D(new Ring(CABIN_WIDTH*0.3, CABIN_WIDTH*0.375, CABIN_WIDTH*0.2), 16, 20), children);
         this.setM(m);
         this.setColor([0.8,0.23,0.16]);
+        this.propellerRotation = 0;
     }
 
     setM(m) {
-        super.setM(m);
-        this.children[0].setM(m);
+        let mPropeller = mat4.create();
+        mat4.rotate(mPropeller, m, this.propellerRotation, [0,0,1]);
+        super.setM(mPropeller);
+        this.children[0].setM(mPropeller);
+        console.log(this.propellerRotation);
     }
 
     setBladeRotation(rotation) {
         this.children[0].setBladeRotation(rotation);
+    }
+
+    setPropellerRotation(rotation) {
+        this.propellerRotation = rotation;
+        while (this.propellerRotation > 0.5*Math.PI) {
+            this.propellerRotation = 0.5*Math.PI;
+        }
+        while (this.propellerRotation < -0.5*Math.PI) {
+            this.propellerRotation = -0.5*Math.PI;
+        }
     }
 }
 
