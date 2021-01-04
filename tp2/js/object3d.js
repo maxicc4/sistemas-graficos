@@ -94,6 +94,7 @@ class HelicopterContainer extends Object3D {
 
     setRoll(roll) {
         this.roll = roll;
+        this.children[0].setRoll(roll);
     }
 
     getDirection(direction) {
@@ -173,6 +174,10 @@ class Helicopter extends Object3D {
         this.children[6].setM(mSkid2);
     }
 
+    setRoll(roll) {
+        this.children[4].setRoll(roll);
+    }
+
     setBladeRotation(rotation) {
         for (let i=0; i<4; i++) {
             this.children[i].setBladeRotation(rotation);
@@ -183,7 +188,7 @@ class Helicopter extends Object3D {
         this.children[0].setPropellerRotation(rotation);
         this.children[1].setPropellerRotation(rotation);
         this.children[2].setPropellerRotation(-rotation);
-        this.children[3].setPropellerRotation(-rotation);
+        this.children[3].setPropellerRotation(- rotation);
     }
 }
 
@@ -344,6 +349,10 @@ class Tail extends Object3D {
         mat4.rotate(mTailCylinder, mTailCylinder, Math.PI/2, [1,0,0]);
         this.children[2].setM(mTailCylinder);
     }
+
+    setRoll(roll) {
+        this.children[2].setRoll(roll);
+    }
 }
 
 class TailTieRod extends Object3D {
@@ -365,18 +374,25 @@ class TailCylinder extends Object3D {
         children.push(new Fin(m));
         super(m, new Grid3D(new Cylinder(CABIN_LENGTH*0.015, CABIN_WIDTH*0.6, true), 16, 20), children);
         this.setM(m);
+        this.roll = 0;
     }
 
     setM(m) {
         super.setM(m);
         let mFin1 = mat4.create();
         mat4.translate(mFin1, m, [-CABIN_LENGTH*0.015,CABIN_WIDTH*0.3,0]);
+        mat4.rotate(mFin1, mFin1, this.roll, [0,0,1]);
         mat4.rotate(mFin1, mFin1, Math.PI/2, [-1,0,0]);
         this.children[0].setM(mFin1);
         let mFin2 = mat4.create();
         mat4.translate(mFin2, m, [-CABIN_LENGTH*0.015,-CABIN_WIDTH*0.3,0]);
+        mat4.rotate(mFin2, mFin2, this.roll, [0,0,1]);
         mat4.rotate(mFin2, mFin2, Math.PI/2, [-1,0,0]);
         this.children[1].setM(mFin2);
+    }
+
+    setRoll(roll) {
+        this.roll = roll*0.8;
     }
 }
 
