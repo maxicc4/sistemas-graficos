@@ -5,6 +5,7 @@ class HelicopterController {
         this.xArrow=0;
         this.yArrow=0;
         this.zArrow=0;
+        this.upArm=false;  // para subir y bajar los brazos
 
         this.altitudeInertia=0.01;
         this.speedInertia=0.1;
@@ -13,6 +14,7 @@ class HelicopterController {
         this.deltaAltitude=1;
         this.deltaSpeed=0.01;
         this.deltaAngle=0.03;
+        this.deltaArmAngle=0.01;
 
         this.maxSpeed=1;
         this.maxAltitude=PLOT_SIZE_TERRAIN*0.75;
@@ -30,6 +32,7 @@ class HelicopterController {
         this.angleTarget=0;
         this.altitudeTarget=this.minAltitude;
         this.speedTarget=0;
+        this.armAngle = 0;
 
         let body = $("body");
 
@@ -54,6 +57,9 @@ class HelicopterController {
                 case "Q":
                     this.yArrow=-1;
                     break;
+                case "H":
+                    this.upArm=!this.upArm;
+                    break;
                 default:
                     handled = false;
             }
@@ -77,6 +83,7 @@ class HelicopterController {
                 case "Q":
                     this.yArrow=0;
                     break;
+                case "H":
                 default:
                     handled = false;
             }
@@ -136,6 +143,19 @@ class HelicopterController {
         angleRotationBlades += 0.6*this.speed;
         this.helicopterContainer.setBladeRotation(angleRotationBlades);
         this.helicopterContainer.setPropellerRotation(0.5*Math.PI*this.speed);
+        
+        if (this.upArm) {
+            this.armAngle += this.deltaArmAngle;
+            if (this.armAngle > Math.PI*0.5) {
+                this.armAngle = Math.PI*0.5;
+            }
+        } else {
+            this.armAngle -= this.deltaArmAngle;
+            if (this.armAngle < 0) {
+                this.armAngle = 0;
+            }
+        }
+        this.helicopterContainer.setArmAngle(this.armAngle);
     }
 
     getPosition() {

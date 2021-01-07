@@ -123,6 +123,10 @@ class HelicopterContainer extends Object3D {
     setPropellerRotation(rotation) {
         this.children[0].setPropellerRotation(rotation);
     }
+
+    setArmAngle(angle) {
+        this.children[0].setArmAngle(angle);
+    }
 }
 
 class Helicopter extends Object3D {
@@ -137,6 +141,7 @@ class Helicopter extends Object3D {
         children.push(new Skid(m));
         super(m, new Grid3D(new Cabin(CABIN_LENGTH, CABIN_HEIGHT, CABIN_WIDTH), 20, 40), children);
         this.setM(m);
+        this.armAngle = 0;
     }
 
     setM(m) {
@@ -146,17 +151,21 @@ class Helicopter extends Object3D {
         super.setM(mHelicopter);
         let mRotorArm1 = mat4.create();
         mat4.translate(mRotorArm1, mHelicopter, [-CABIN_LENGTH/7,(CABIN_HEIGHT/3),CABIN_WIDTH/2]);
+        mat4.rotate(mRotorArm1, mRotorArm1, this.armAngle, [-1,0,0]);
         this.children[0].setM(mRotorArm1);
         let mRotorArm2 = mat4.create();
         mat4.translate(mRotorArm2, mHelicopter, [CABIN_LENGTH/4,(CABIN_HEIGHT/3),CABIN_WIDTH/2]);
+        mat4.rotate(mRotorArm2, mRotorArm2, this.armAngle, [-1,0,0]);
         this.children[1].setM(mRotorArm2);
         let mRotorArm3 = mat4.create();
         mat4.translate(mRotorArm3, mHelicopter, [-CABIN_LENGTH/7,(CABIN_HEIGHT/3),-CABIN_WIDTH/2]);
         mat4.rotate(mRotorArm3, mRotorArm3, Math.PI, [0,1,0]);
+        mat4.rotate(mRotorArm3, mRotorArm3, this.armAngle, [-1,0,0]);
         this.children[2].setM(mRotorArm3);
         let mRotorArm4 = mat4.create();
         mat4.translate(mRotorArm4, mHelicopter, [CABIN_LENGTH/4,(CABIN_HEIGHT/3),-CABIN_WIDTH/2]);
         mat4.rotate(mRotorArm4, mRotorArm4, Math.PI, [0,1,0]);
+        mat4.rotate(mRotorArm4, mRotorArm4, this.armAngle, [-1,0,0]);
         this.children[3].setM(mRotorArm4);
 
         let mTail = mat4.create();
@@ -189,6 +198,10 @@ class Helicopter extends Object3D {
         this.children[1].setPropellerRotation(rotation);
         this.children[2].setPropellerRotation(-rotation);
         this.children[3].setPropellerRotation(- rotation);
+    }
+
+    setArmAngle(angle) {
+        this.armAngle = angle;
     }
 }
 
