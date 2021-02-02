@@ -20,7 +20,6 @@ class Object3D {
     draw() {
         updateModelMatrix(this.m);
         setupVertexShaderMatrix();
-        gl.uniform3fv(gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), "uColor"), this.color);
         gl.uniform1i(gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), "uSampler"), 0);
         if (this.grid3D != null) {
             this.grid3D.drawGeometry();
@@ -271,7 +270,6 @@ class Propeller extends Object3D {
         mat4.rotate(mPropeller, m, this.propellerRotation, [0,0,1]);
         super.setM(mPropeller);
         this.children[0].setM(mPropeller);
-        console.log(this.propellerRotation);
     }
 
     setBladeRotation(rotation) {

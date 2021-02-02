@@ -66,7 +66,6 @@ function initShaders() {
     let vertexShader = makeShader($("#vertex-shader").text(), gl.VERTEX_SHADER);
     let vertexShaderTerrain = makeShader($("#vertex-shader-terrain").text(), gl.VERTEX_SHADER);
     let fragmentShader = makeShader($("#fragment-shader").text(), gl.FRAGMENT_SHADER);
-    let fragmentShaderTexture = makeShader($("#fragment-shader-texture").text(), gl.FRAGMENT_SHADER);
 
     //create program
     glProgram = gl.createProgram();
@@ -81,11 +80,13 @@ function initShaders() {
     gl.enableVertexAttribArray(glProgram.vertexPositionAttribute);
     glProgram.vertexNormalAttribute = gl.getAttribLocation(glProgram, "aVertexNormal");
     gl.enableVertexAttribArray(glProgram.vertexNormalAttribute);
+    glProgram.vertexUVAttribute = gl.getAttribLocation(glProgram, "aUV");
+    gl.enableVertexAttribArray(glProgram.vertexUVAttribute);
 
 
     glProgramTerrain = gl.createProgram();
     gl.attachShader(glProgramTerrain, vertexShaderTerrain);
-    gl.attachShader(glProgramTerrain, fragmentShaderTexture);
+    gl.attachShader(glProgramTerrain, fragmentShader);
     gl.linkProgram(glProgramTerrain);
     if (!gl.getProgramParameter(glProgramTerrain, gl.LINK_STATUS)) {
         alert("Unable to initialize the shader glProgramTerrain.");
