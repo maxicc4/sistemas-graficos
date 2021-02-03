@@ -383,12 +383,20 @@ class BoxSurface extends Surface {
     }
 
     getCapTextureCoordinates(u, v) {
-        let pos = this.getPosition(u,v);
-        return [(pos[0]+this.width*0.5)/this.width, (pos[2]+this.height*0.5)/this.height];
+        if (v === 1) {
+            let pos = this.getPosition(u, v);
+            return [(pos[0] + this.width * 0.5) / this.width, (pos[2] + this.height * 0.5) / this.height];
+        } else {
+            return [0.0, 0.0];
+        }
     }
 
     getCapTextureCoordinatesCenter(v) {
-        let pos = this.getCapPosition(v);
-        return [(pos[0]+this.width*0.5)/this.width, (pos[2]+this.height*0.5)/this.height];
+        if (v === 1) {
+            let pos = this.getCapPosition(v);
+            return [(pos[0]+this.width*0.5)/this.width, (pos[2]+this.height*0.5)/this.height];
+        } else {
+            return [0.0, 0.0];
+        }
     }
 }
