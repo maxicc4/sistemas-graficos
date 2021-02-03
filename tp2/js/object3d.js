@@ -552,5 +552,6 @@ class Heliport extends Object3D {
         let children = [];
         super(m, new Grid3D(new BoxSurface(CABIN_LENGTH*4, CABIN_LENGTH*4, CABIN_WIDTH*0.2), 8, 4), children);
         this.setM(m);
+        this.setTexture("img/helipad.jpg");
     }
 }

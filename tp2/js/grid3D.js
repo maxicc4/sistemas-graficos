@@ -66,6 +66,7 @@ class Grid3D {
             v = 0;
             pos = surface.getCapPosition(v);
             nrm = surface.getCapNormal(v);
+            uvs = surface.getCapTextureCoordinatesCenter(v);
             for (let j = 0; j <= cols; j++) {
                 u = j / cols;
                 positionBuffer.push(pos[0]);
@@ -75,8 +76,6 @@ class Grid3D {
                 normalBuffer.push(nrm[0]);
                 normalBuffer.push(nrm[1]);
                 normalBuffer.push(nrm[2]);
-
-                uvs = surface.getCapTextureCoordinates(u, v);
 
                 uvBuffer.push(uvs[0]);
                 uvBuffer.push(uvs[1]);
@@ -144,6 +143,7 @@ class Grid3D {
                 uvBuffer.push(uvs[1]);
             }
             pos = surface.getCapPosition(v);
+            uvs = surface.getCapTextureCoordinatesCenter(v);
             for (let j = 0; j <= cols; j++) {
                 u = j / cols;
                 positionBuffer.push(pos[0]);
@@ -153,8 +153,6 @@ class Grid3D {
                 normalBuffer.push(nrm[0]);
                 normalBuffer.push(nrm[1]);
                 normalBuffer.push(nrm[2]);
-
-                uvs = surface.getCapTextureCoordinates(u, v);
 
                 uvBuffer.push(uvs[0]);
                 uvBuffer.push(uvs[1]);

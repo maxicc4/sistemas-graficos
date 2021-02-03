@@ -293,6 +293,12 @@ class Cylinder extends Surface {
     getCapTextureCoordinates(u, v) {
         return [u, v];
     }
+
+    getCapTextureCoordinatesCenter(v) {
+        let pos = this.getCapPosition(v);
+        // TODO: en base al maximo y minimo en cada dimension, devolver un valor entre 0,1
+        return [v, v];
+    }
 }
 
 class BoxSurface extends Surface {
@@ -372,7 +378,17 @@ class BoxSurface extends Surface {
         return vecNormal;
     }
 
+    getTextureCoordinates(u, v) {
+        return [0.0, 0.0];
+    }
+
     getCapTextureCoordinates(u, v) {
-        return [u, v];
+        let pos = this.getPosition(u,v);
+        return [(pos[0]+this.width*0.5)/this.width, (pos[2]+this.height*0.5)/this.height];
+    }
+
+    getCapTextureCoordinatesCenter(v) {
+        let pos = this.getCapPosition(v);
+        return [(pos[0]+this.width*0.5)/this.width, (pos[2]+this.height*0.5)/this.height];
     }
 }

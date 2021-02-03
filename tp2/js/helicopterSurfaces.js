@@ -160,6 +160,12 @@ class Cabin extends Surface {
     getCapTextureCoordinates(u, v) {
         return [u, v];
     }
+
+    getCapTextureCoordinatesCenter(v) {
+        let pos = this.getCapPosition(v);
+        // TODO: en base al maximo y minimo en cada dimension, devolver un valor entre 0,1
+        return [v, v];
+    }
 }
 
 class ArmSurface extends Surface {
@@ -373,6 +379,12 @@ class FinSurface extends Surface {
     getCapTextureCoordinates(u, v) {
         return [u, v];
     }
+
+    getCapTextureCoordinatesCenter(v) {
+        let pos = this.getCapPosition(v);
+        // TODO: en base al maximo y minimo en cada dimension, devolver un valor entre 0,1
+        return [v, v];
+    }
 }
 
 class SkidSurface extends Surface {
@@ -473,5 +485,11 @@ class SkidSurface extends Surface {
 
     getCapTextureCoordinates(u, v) {
         return [u, v];
+    }
+
+    getCapTextureCoordinatesCenter(v) {
+        let pos = this.getCapPosition(v);
+        // TODO: en base al maximo y minimo en cada dimension, devolver un valor entre 0,1
+        return [v, v];
     }
 }
