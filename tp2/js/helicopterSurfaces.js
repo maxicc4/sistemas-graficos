@@ -157,14 +157,30 @@ class Cabin extends Surface {
         return vecNormal;
     }
 
+    getTextureCoordinates(u, v) {
+        if (u >= 0 && u <= 0.2) {
+            return [
+                1-Math.abs(v-0.5) * 0.0312 + 0.0312,
+                (1 - u / 0.2) * 0.33 + 0.24
+            ];
+        }
+        return [0,0];
+    }
+
     getCapTextureCoordinates(u, v) {
-        return [u, v];
+        let pos = this.getPosition(u, v);
+        return  [
+            ((pos[0] + this.length * 0.5) / this.length)*0.9 + 0.05,
+            (1-((pos[1] + this.height * 0.5) / this.height))*0.4+0.3
+        ];
     }
 
     getCapTextureCoordinatesCenter(v) {
         let pos = this.getCapPosition(v);
-        // TODO: en base al maximo y minimo en cada dimension, devolver un valor entre 0,1
-        return [v, v];
+        return [
+            ((pos[0] + this.length * 0.5) / this.length)*0.9 + 0.05,
+            (1-((pos[1] + this.height * 0.5) / this.height))*0.4+0.3
+        ];
     }
 }
 

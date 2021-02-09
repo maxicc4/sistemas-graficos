@@ -149,6 +149,7 @@ class Helicopter extends Object3D {
         super(m, new Grid3D(new Cabin(CABIN_LENGTH, CABIN_HEIGHT, CABIN_WIDTH), 20, 40), children);
         this.setM(m);
         this.armAngle = 0;
+        this.setTexture("img/cabina.png");
     }
 
     setM(m) {
