@@ -68,21 +68,21 @@
             varying vec3 vPosWorld;
             varying vec2 vUV;
 
-            uniform sampler2D uSampler;
+            uniform sampler2D uSampler0;
 
-            const float epsilon=0.01;
+            const float epsilon=0.00000001;
             const float amplitud=40.0;
 
             void main(void) {
                 vec3 position = aVertexPosition;
                 vec2 uv = uOffsetUV + aUV*uScaleUV;
 
-                vec4 center = texture2D(uSampler, vec2(uv.s, uv.t));
-                vec4 masU = texture2D(uSampler, vec2(uv.s+epsilon, uv.t));
-                vec4 masV = texture2D(uSampler, vec2(uv.s, uv.t+epsilon));
+                vec4 center = texture2D(uSampler0, vec2(uv.s, uv.t));
+                vec4 masU = texture2D(uSampler0, vec2(uv.s+epsilon, uv.t));
+                vec4 masV = texture2D(uSampler0, vec2(uv.s, uv.t+epsilon));
 
-                vec4 menosU = texture2D(uSampler, vec2(uv.s-epsilon, uv.t));
-                vec4 menosV = texture2D(uSampler, vec2(uv.s, uv.t-epsilon));
+                vec4 menosU = texture2D(uSampler0, vec2(uv.s-epsilon, uv.t));
+                vec4 menosV = texture2D(uSampler0, vec2(uv.s, uv.t-epsilon));
 
 
                 // elevamos la coordenada Y
@@ -137,13 +137,40 @@
             varying vec3 vPosWorld;
             varying vec2 vUV;
 
-            uniform sampler2D uSampler;
+            uniform sampler2D uSampler0;
 
             uniform bool uUseLighting;          // usar iluminacion si/no
 
             void main(void) {
                 vec3 lightVec=normalize(vec3(25.0,1000.0,1000.0)-vPosWorld);
-                vec3 color=texture2D(uSampler, vec2(vUV.s, vUV.t)).xyz;
+                vec3 color=texture2D(uSampler0, vec2(vUV.s, vUV.t)).xyz;
+                if (uUseLighting) {
+                    color=dot(lightVec,vNormal)*color+vec3(0.2,0.2,0.2);
+                }
+
+                gl_FragColor = vec4(color,1.0);
+            }
+        </script>
+
+        <script type="x-shader/x-fragment" id="fragment-shader-terrain">
+            precision highp float;
+            varying vec3 vNormal;
+            varying vec3 vPosWorld;
+            varying vec2 vUV;
+
+            uniform sampler2D uSampler0;
+            uniform sampler2D uSampler1;
+
+            uniform bool uUseLighting;          // usar iluminacion si/no
+
+            void main(void) {
+                vec3 lightVec=normalize(vec3(25.0,1000.0,1000.0)-vPosWorld);
+                vec3 pasto1=texture2D(uSampler1,vUV*100.0).xyz;
+                vec3 pasto2=texture2D(uSampler1,vUV*50.0).xyz;
+                vec3 pasto3=texture2D(uSampler1,vUV*2.11).xyz;
+
+                //vec3 color=texture2D(uSampler1, vec2(vUV.s*25.0, vUV.t*25.0)).xyz;
+                vec3 color=mix(mix(pasto1,pasto2,0.5),pasto3,0.3);
                 if (uUseLighting) {
                     color=dot(lightVec,vNormal)*color+vec3(0.2,0.2,0.2);
                 }

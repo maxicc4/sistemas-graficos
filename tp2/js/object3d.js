@@ -14,16 +14,18 @@ class Object3D {
         this.grid3D = grid3D;
         this.children = children;
         this.m = m;   // Matriz de modelado
-        this.setColor([235,217,204,255]);
+        this.textures = [];
     }
 
     draw() {
         updateModelMatrix(this.m);
         setupVertexShaderMatrix();
 
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, this.texture.getWebGLTexture());
-        gl.uniform1i(gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), "uSampler"), 0);
+        for (let ii = 0; ii < this.textures.length; ++ii) {
+            gl.activeTexture(gl.TEXTURE0 + ii);
+            gl.bindTexture(gl.TEXTURE_2D, this.textures[ii].getWebGLTexture());
+            gl.uniform1i(gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), "uSampler"+ii), ii);
+        }
 
         if (this.grid3D != null) {
             this.grid3D.drawGeometry();
@@ -37,12 +39,12 @@ class Object3D {
         this.m = m;
     }
 
-    setColor(color) {
-        this.texture = Texture.createTextureFromColor(color);
+    addColor(color) {
+        this.textures.push(Texture.createTextureFromColor(color));
     }
 
-    setTexture(url) {
-        this.texture = Texture.createTextureFromUrl(url);
+    addTexture(url) {
+        this.textures.push(Texture.createTextureFromUrl(url));
     }
 
     setPosition(p) {
@@ -76,6 +78,7 @@ class HelicopterContainer extends Object3D {
         this.pitch = 0;
         this.roll = 0;
         this.setM(m);
+        this.addColor([235,217,204,255]);
     }
 
     setM(m) {
@@ -149,7 +152,7 @@ class Helicopter extends Object3D {
         super(m, new Grid3D(new Cabin(CABIN_LENGTH, CABIN_HEIGHT, CABIN_WIDTH), 20, 40), children);
         this.setM(m);
         this.armAngle = 0;
-        this.setTexture("img/cabina.png");
+        this.addTexture("img/cabina.png");
     }
 
     setM(m) {
@@ -220,7 +223,7 @@ class RotorArm extends Object3D {
         // cilindro que forma el rotor
         super(m, new Grid3D(new Cylinder(CABIN_WIDTH*0.13, CABIN_LENGTH/5, true), 16, 20), children);
         this.setM(m);
-        this.setColor([51,51,51,255]);
+        this.addColor([51,51,51,255]);
     }
 
     setM(m) {
@@ -245,6 +248,7 @@ class Arm extends Object3D {
         children.push(new Propeller(m));
         super(m, new Grid3D(new ArmSurface(CABIN_WIDTH*0.67, CABIN_LENGTH*0.09, CABIN_LENGTH*0.045), 16, 20), children);
         this.setM(m);
+        this.addColor([235,217,204,255]);
     }
 
     setM(m) {
@@ -270,7 +274,7 @@ class Propeller extends Object3D {
         children.push(new PropellerShaft(m));
         super(m, new Grid3D(new Ring(CABIN_WIDTH*0.3, CABIN_WIDTH*0.375, CABIN_WIDTH*0.2), 16, 20), children);
         this.setM(m);
-        this.setColor([204,59,41,255]);
+        this.addColor([204,59,41,255]);
         this.propellerRotation = 0;
     }
 
@@ -305,6 +309,7 @@ class PropellerShaft extends Object3D {
         super(m, new Grid3D(new Cylinder(CABIN_LENGTH*0.025, CABIN_WIDTH*0.24, true), 16, 20), children);
         this.setM(m);
         this.bladeRotation = 0;
+        this.addColor([235,217,204,255]);
     }
 
     setM(m) {
@@ -335,7 +340,7 @@ class Blade extends Object3D {
         let children = [];
         super(m, new Grid3D(new BladeSurface(CABIN_WIDTH*0.025, CABIN_WIDTH*0.2, CABIN_WIDTH*0.3), 16, 20), children);
         this.setM(m);
-        this.setColor([153,153,153,255]);
+        this.addColor([153,153,153,255]);
     }
 
     setM(m) {
@@ -354,6 +359,7 @@ class Tail extends Object3D {
         children.push(new TailCylinder(m));
         super(m, null, children);
         this.setM(m);
+        this.addColor([235,217,204,255]);
     }
 
     setM(m) {
@@ -380,6 +386,7 @@ class TailTieRod extends Object3D {
         let children = [];
         super(m, new Grid3D(new TailTieRodSurface(CABIN_HEIGHT/4, CABIN_HEIGHT/16, CABIN_LENGTH/2, CABIN_WIDTH/32), 16, 20), children);
         this.setM(m);
+        this.addColor([235,217,204,255]);
     }
 
     setM(m) {
@@ -395,6 +402,7 @@ class TailCylinder extends Object3D {
         super(m, new Grid3D(new Cylinder(CABIN_LENGTH*0.015, CABIN_WIDTH*0.6, true), 16, 20), children);
         this.setM(m);
         this.roll = 0;
+        this.addColor([235,217,204,255]);
     }
 
     setM(m) {
@@ -422,7 +430,7 @@ class Fin extends Object3D {
         let children = [];
         super(m, new Grid3D(new FinSurface(CABIN_WIDTH*0.48, CABIN_HEIGHT, CABIN_WIDTH/32), 16, 20), children);
         this.setM(m);
-        this.setColor([204,59,41,255]);
+        this.addColor([204,59,41,255]);
     }
 
     setM(m) {
@@ -437,7 +445,7 @@ class Skid extends Object3D {
         children.push(new SkidCylinder(m));
         super(m, new Grid3D(new SkidSurface(CABIN_LENGTH*0.6, CABIN_LENGTH*0.015), 16, 20), children);
         this.setM(m);
-        this.setColor([127,127,127,255]);
+        this.addColor([127,127,127,255]);
     }
 
     setM(m) {
@@ -461,7 +469,7 @@ class SkidCylinder extends Object3D {
         let children = [];
         super(m, new Grid3D(new Cylinder(CABIN_LENGTH*0.015, CABIN_HEIGHT/3, false), 16, 20), children);
         this.setM(m);
-        this.setColor([51,51,51,255]);
+        this.addColor([51,51,51,255]);
     }
 }
 
@@ -479,8 +487,9 @@ class Terrain extends Object3D {
         );
         this.setM(m);
         this.offsetUV = vec2.fromValues(0.625,0.375);
-        this.setSizeTexture(4096);
-        this.setTexture("img/heightmap.png");
+        this.addTexture("img/heightmap.png");
+        this.addTexture("img/pasto.jpg");
+        this.calculateScaleUV();
     }
 
     draw() {
@@ -491,9 +500,8 @@ class Terrain extends Object3D {
         gl.useProgram(glProgram);
     }
 
-    setSizeTexture(sizeTexture) {
-        this.sizeTexture = sizeTexture;
-        this.numberOfPlots = sizeTexture / 256;   //por columnas es igual, es cuadrada
+    calculateScaleUV() {
+        this.numberOfPlots = 16;
         this.plotSizeUV = 1 / this.numberOfPlots;
         this.scaleUV = this.plotSizeUV * 3;
     }
@@ -537,7 +545,7 @@ class SkySphere extends Object3D {
         let children = [];
         super(m, new Grid3D(new SphereSurface(PLOT_SIZE_TERRAIN), 50, 50), children);
         this.setM(m);
-        this.setColor([36,227,237,255]);
+        this.addColor([36,227,237,255]);
     }
 
     draw() {
@@ -553,6 +561,6 @@ class Heliport extends Object3D {
         let children = [];
         super(m, new Grid3D(new BoxSurface(CABIN_LENGTH*4, CABIN_LENGTH*4, CABIN_WIDTH*0.2), 8, 4), children);
         this.setM(m);
-        this.setTexture("img/helipad.jpg");
+        this.addTexture("img/helipad.jpg");
     }
 }
