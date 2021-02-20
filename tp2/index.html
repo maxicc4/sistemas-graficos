@@ -165,6 +165,7 @@
             uniform sampler2D uSampler4;
             uniform sampler2D uSampler5;
             uniform sampler2D uSampler6;
+            uniform sampler2D uSampler7;
 
             uniform bool uUseLighting;          // usar iluminacion si/no
 
@@ -274,7 +275,7 @@
 
                 vec3 lowZone=mix(mix(sand1,sand2,0.5),sand3,0.3);
 
-                // medium zone (pasto y tierra)
+                // Medium zone (pasto y tierra)
                 vec3 pasture1=texture2D(uSampler2,vUV*100.0).xyz;
                 vec3 pasture2=texture2D(uSampler2,vUV*50.0).xyz;
                 vec3 pasture3=texture2D(uSampler2,vUV*2.11).xyz;
@@ -307,10 +308,19 @@
                 mask2=smoothstep(-0.1,0.5,mask2);
 
                 // combino color1 (tierra y rocas) con color2 a partir de la mascara2
-                vec3 color=mix(pastureColor,landAndStoneColor,mask2);
+                vec3 mediumZone=mix(pastureColor,landAndStoneColor,mask2);
 
+                // High zone (musgo)
+                vec3 moss1=texture2D(uSampler7,vUV*50.0).xyz;
+                vec3 moss2=texture2D(uSampler7,vUV*25.0).xyz;
+                vec3 moss3=texture2D(uSampler7,vUV*2.11).xyz;
 
-                //vec3 color = landAndStoneColor;
+                vec3 highZone=mix(mix(moss1,moss2,0.5),moss3,0.3);
+
+                float mixLowMedium=smoothstep(0.0,5.0,vPosWorld.y);
+                float mixMediumHigh=smoothstep(10.0,20.0,vPosWorld.y);
+                vec3 color = mix(mix(lowZone,mediumZone,mixLowMedium),highZone,mixMediumHigh);
+
                 if (uUseLighting) {
                     vec3 lightVec=normalize(vec3(25.0,1000.0,1000.0)-vPosWorld);
                     color=dot(lightVec,vNormal)*color+vec3(0.2,0.2,0.2);

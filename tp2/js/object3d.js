@@ -494,6 +494,7 @@ class Terrain extends Object3D {
         this.addTexture("img/tierra2.jpg");
         this.addTexture("img/tierra3.jpg");
         this.addTexture("img/roca.jpg");
+        this.addTexture("img/musgo2.jpg");
         this.calculateScaleUV();
     }
 
