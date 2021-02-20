@@ -488,7 +488,12 @@ class Terrain extends Object3D {
         this.setM(m);
         this.offsetUV = vec2.fromValues(0.625,0.375);
         this.addTexture("img/heightmap.png");
+        this.addTexture("img/arena.jpg");
         this.addTexture("img/pasto.jpg");
+        this.addTexture("img/tierra1.jpg");
+        this.addTexture("img/tierra2.jpg");
+        this.addTexture("img/tierra3.jpg");
+        this.addTexture("img/roca.jpg");
         this.calculateScaleUV();
     }
 
