@@ -288,34 +288,31 @@
 
                 vec3 pastureColor=mix(mix(pasture1,pasture2,0.5),pasture3,0.3);
 
-                // genero una mascara 1 a partir de ruido perlin
-                float noise1=noise(vUV.xyx*200.69);
-                float noise2=noise(vUV.xyx*400.32);
-                float noise3=noise(vUV.xyx*800.58);
+                vec3 landColor=mix(mix(land1,land2,0.7),land3,0.3);
 
-                float mask1=mix(mix(noise1,noise2,0.5),noise3,0.3);
-                mask1=smoothstep(-0.1,0.2,mask1);
-
-                // combino tierra y roca usando la mascara 1
-                vec3 landAndStoneColor=mix(mix(mix(land1,land2,0.5),land3,0.3),stone,mask1);
-
-                // genero la mascara 2 a partir del ruido perlin
-                float noise4=noise(vUV.xyx*100.59);
-                float noise5=noise(vUV.xyx*300.25);
-                float noise6=noise(vUV.xyx*653.03);
+                float noise4=noise(vUV.xyx*10.59);
+                float noise5=noise(vUV.xyx*20.25);
+                float noise6=noise(vUV.xyx*200.03);
 
                 float mask2=mix(mix(noise4,noise5,0.5),noise6,0.3);
                 mask2=smoothstep(-0.1,0.5,mask2);
 
-                // combino color1 (tierra y rocas) con color2 a partir de la mascara2
-                vec3 mediumZone=mix(pastureColor,landAndStoneColor,mask2);
+                vec3 mediumZone=mix(pastureColor,landColor,mask2);
 
                 // High zone (musgo)
                 vec3 moss1=texture2D(uSampler7,vUV*50.0).xyz;
                 vec3 moss2=texture2D(uSampler7,vUV*25.0).xyz;
                 vec3 moss3=texture2D(uSampler7,vUV*2.11).xyz;
+                
+                float noise7=noise(vUV.xyx*200.59);
+                float noise8=noise(vUV.xyx*400.25);
+                float noise9=noise(vUV.xyx*800.03);
+
+                float mask3=mix(mix(noise7,noise8,0.5),noise9,0.3);
+                mask3=smoothstep(-0.1,0.5,mask3);
 
                 vec3 highZone=mix(mix(moss1,moss2,0.5),moss3,0.3);
+                highZone = mix(highZone,stone,mask3);
 
                 float mixLowMedium=smoothstep(0.0,5.0,vPosWorld.y);
                 float mixMediumHigh=smoothstep(10.0,20.0,vPosWorld.y);
