@@ -303,7 +303,7 @@
                 vec3 moss1=texture2D(uSampler7,vUV*50.0).xyz;
                 vec3 moss2=texture2D(uSampler7,vUV*25.0).xyz;
                 vec3 moss3=texture2D(uSampler7,vUV*2.11).xyz;
-                
+
                 float noise7=noise(vUV.xyx*200.59);
                 float noise8=noise(vUV.xyx*400.25);
                 float noise9=noise(vUV.xyx*800.03);
@@ -314,7 +314,7 @@
                 vec3 highZone=mix(mix(moss1,moss2,0.5),moss3,0.3);
                 highZone = mix(highZone,stone,mask3);
 
-                float mixLowMedium=smoothstep(0.0,5.0,vPosWorld.y);
+                float mixLowMedium=smoothstep(0.0,8.0,vPosWorld.y);
                 float mixMediumHigh=smoothstep(10.0,20.0,vPosWorld.y);
                 vec3 color = mix(mix(lowZone,mediumZone,mixLowMedium),highZone,mixMediumHigh);
 
@@ -322,6 +322,31 @@
                     vec3 lightVec=normalize(vec3(25.0,1000.0,1000.0)-vPosWorld);
                     color=dot(lightVec,vNormal)*color+vec3(0.2,0.2,0.2);
                 }
+
+                gl_FragColor = vec4(color,1.0);
+            }
+        </script>
+
+        <script type="x-shader/x-fragment" id="fragment-shader-water">
+            precision highp float;
+            varying vec3 vNormal;
+            varying vec3 vPosWorld;
+            varying vec2 vUV;
+
+            uniform sampler2D uSampler0;
+            uniform vec2 uOffsetUV;
+
+            uniform bool uUseLighting;          // usar iluminacion si/no
+
+            void main(void) {
+                vec2 uvWater = vUV + uOffsetUV;
+                vec3 water1=texture2D(uSampler0,uvWater*100.0).xyz;
+                vec3 water2=texture2D(uSampler0,uvWater*50.0).xyz;
+                vec3 water3=texture2D(uSampler0,uvWater*2.11).xyz;
+
+                vec3 color=mix(mix(water1,water2,0.5),water3,0.3);
+                vec3 lightVec=normalize(vec3(25.0,1000.0,1000.0)-vPosWorld);
+                color=dot(lightVec,vNormal)*color+vec3(0.2,0.2,0.2);
 
                 gl_FragColor = vec4(color,1.0);
             }

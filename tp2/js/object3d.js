@@ -476,6 +476,7 @@ class SkidCylinder extends Object3D {
 class Terrain extends Object3D {
     constructor(m) {
         let children = [];
+        children.push(new WaterPlane(m));
         super(
             m,
             new Grid3D(
@@ -521,6 +522,7 @@ class Terrain extends Object3D {
         if (this.offsetUV[0] >= 1) {
             this.offsetUV[0] = 0;
         }
+        this.children[0].increaseOffsetU();
         console.log(this.offsetUV);
     }
     decreaseOffsetU() {
@@ -528,6 +530,7 @@ class Terrain extends Object3D {
         if (this.offsetUV[0] < 0) {
             this.offsetUV[0] = 1;
         }
+        this.children[0].decreaseOffsetU();
         console.log(this.offsetUV);
     }
     increaseOffsetV() {
@@ -535,6 +538,7 @@ class Terrain extends Object3D {
         if (this.offsetUV[1] >= 1) {
             this.offsetUV[1] = 0;
         }
+        this.children[0].increaseOffsetV();
         console.log(this.offsetUV);
     }
     decreaseOffsetV() {
@@ -542,7 +546,15 @@ class Terrain extends Object3D {
         if (this.offsetUV[1] < 0) {
             this.offsetUV[1] = 1;
         }
+        this.children[0].decreaseOffsetV();
         console.log(this.offsetUV);
+    }
+
+    setM(m) {
+        super.setM(m);
+        let mWaterPlane = mat4.create();
+        mat4.translate(mWaterPlane, m, [0, 0.8, 0]);
+        this.children[0].setM(mWaterPlane);
     }
 }
 
@@ -568,5 +580,47 @@ class Heliport extends Object3D {
         super(m, new Grid3D(new BoxSurface(CABIN_LENGTH*4, CABIN_LENGTH*4, CABIN_WIDTH*0.2), 8, 4), children);
         this.setM(m);
         this.addTexture("img/helipad.jpg");
+    }
+}
+
+class WaterPlane extends Object3D {
+    constructor(m) {
+        let children = [];
+        super(m, new Grid3D(new Plane(PLOT_SIZE_TERRAIN*3, PLOT_SIZE_TERRAIN*3), 20,20), children);
+        this.setM(m);
+        this.addTexture("img/agua.jpg");
+        this.offsetUV = vec2.fromValues(0.0,0.0);
+    }
+
+    draw() {
+        gl.useProgram(glProgramWater);
+        gl.uniform2fv(gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), "uOffsetUV"), this.offsetUV);
+        super.draw();
+        gl.useProgram(glProgramTerrain);
+    }
+
+    increaseOffsetU() {
+        this.offsetUV[0] = this.offsetUV[0] + 0.333;
+        if (this.offsetUV[0] >= 0.999) {
+            this.offsetUV[0] = 0;
+        }
+    }
+    decreaseOffsetU() {
+        this.offsetUV[0] = this.offsetUV[0] - 0.333;
+        if (this.offsetUV[0] < 0) {
+            this.offsetUV[0] = 1;
+        }
+    }
+    increaseOffsetV() {
+        this.offsetUV[1] = this.offsetUV[1] + 0.333;
+        if (this.offsetUV[1] >= 0.999) {
+            this.offsetUV[1] = 0;
+        }
+    }
+    decreaseOffsetV() {
+        this.offsetUV[1] = this.offsetUV[1] - 0.333;
+        if (this.offsetUV[1] < 0) {
+            this.offsetUV[1] = 1;
+        }
     }
 }

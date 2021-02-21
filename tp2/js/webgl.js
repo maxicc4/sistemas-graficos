@@ -6,6 +6,7 @@ var gl = null,
     canvas = null,
     glProgram = null,
     glProgramTerrain = null,
+    glProgramWater = null,
     lighting = true;
 
 var vertexPositionAttribute = null,
@@ -66,6 +67,7 @@ function initShaders() {
     let vertexShaderTerrain = makeShader($("#vertex-shader-terrain").text(), gl.VERTEX_SHADER);
     let fragmentShader = makeShader($("#fragment-shader").text(), gl.FRAGMENT_SHADER);
     let fragmentShaderTerrain = makeShader($("#fragment-shader-terrain").text(), gl.FRAGMENT_SHADER);
+    let fragmentShaderWater = makeShader($("#fragment-shader-water").text(), gl.FRAGMENT_SHADER);
 
     //create program
     glProgram = gl.createProgram();
@@ -97,6 +99,20 @@ function initShaders() {
     glProgramTerrain.vertexUVAttribute = gl.getAttribLocation(glProgramTerrain, "aUV");
     gl.enableVertexAttribArray(glProgramTerrain.vertexUVAttribute);
 
+    glProgramWater = gl.createProgram();
+    gl.attachShader(glProgramWater, vertexShader);
+    gl.attachShader(glProgramWater, fragmentShaderWater);
+    gl.linkProgram(glProgramWater);
+    if (!gl.getProgramParameter(glProgramWater, gl.LINK_STATUS)) {
+        alert("Unable to initialize the shader glProgramWater.");
+    }
+    gl.useProgram(glProgramWater);
+    glProgramWater.vertexPositionAttribute = gl.getAttribLocation(glProgramWater, "aVertexPosition");
+    gl.enableVertexAttribArray(glProgramWater.vertexPositionAttribute);
+    glProgramWater.vertexNormalAttribute = gl.getAttribLocation(glProgramWater, "aVertexNormal");
+    gl.enableVertexAttribArray(glProgramWater.vertexNormalAttribute);
+    glProgramWater.vertexUVAttribute = gl.getAttribLocation(glProgramWater, "aUV");
+    gl.enableVertexAttribArray(glProgramWater.vertexUVAttribute);
 
     gl.useProgram(glProgram);
 }
