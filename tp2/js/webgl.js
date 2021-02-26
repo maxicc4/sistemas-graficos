@@ -212,7 +212,7 @@ function updateModelMatrix(newModelMatriz) {
     // se actualiza la matriz de normales
     let viewMatrix = cameraControllerInstance.getCamera().getViewMatrix();
     mat4.identity(normalMatrix);
-    mat4.multiply(normalMatrix, viewMatrix, modelMatrix);
-    mat4.invert(normalMatrix, normalMatrix);
+    //mat4.multiply(normalMatrix, viewMatrix, modelMatrix);
+    mat4.invert(normalMatrix, modelMatrix);
     mat4.transpose(normalMatrix, normalMatrix);
 }

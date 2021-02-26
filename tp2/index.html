@@ -142,9 +142,9 @@
             uniform bool uUseLighting;          // usar iluminacion si/no
 
             void main(void) {
-                vec3 lightVec=normalize(vec3(25.0,1000.0,1000.0)-vPosWorld);
                 vec3 color=texture2D(uSampler0, vec2(vUV.s, vUV.t)).xyz;
                 if (uUseLighting) {
+                    vec3 lightVec=normalize(vec3(0.0177,0.707,0.707));
                     color=dot(lightVec,vNormal)*color+vec3(0.2,0.2,0.2);
                 }
 
@@ -318,10 +318,8 @@
                 float mixMediumHigh=smoothstep(10.0,20.0,vPosWorld.y);
                 vec3 color = mix(mix(lowZone,mediumZone,mixLowMedium),highZone,mixMediumHigh);
 
-                if (uUseLighting) {
-                    vec3 lightVec=normalize(vec3(25.0,1000.0,1000.0)-vPosWorld);
-                    color=dot(lightVec,vNormal)*color+vec3(0.2,0.2,0.2);
-                }
+                vec3 lightVec=normalize(vec3(0.0177,0.707,0.707));
+                color=dot(lightVec,vNormal)*color+vec3(0.2,0.2,0.2);
 
                 gl_FragColor = vec4(color,1.0);
             }
@@ -345,7 +343,7 @@
                 vec3 water3=texture2D(uSampler0,uvWater*2.11).xyz;
 
                 vec3 color=mix(mix(water1,water2,0.5),water3,0.3);
-                vec3 lightVec=normalize(vec3(25.0,1000.0,1000.0)-vPosWorld);
+                vec3 lightVec=normalize(vec3(0.0177,0.707,0.707));
                 color=dot(lightVec,vNormal)*color+vec3(0.2,0.2,0.2);
 
                 gl_FragColor = vec4(color,1.0);
