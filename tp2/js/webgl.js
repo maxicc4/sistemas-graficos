@@ -135,12 +135,14 @@ function setupVertexShaderMatrix(){
     var projMatrixUniform  = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), "projMatrix");
     var normalMatrixUniform  = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), "normalMatrix");
     var useLightingUniform = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), "uUseLighting");
+    var cameraPositionUniform = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), "uCameraPosition");
 
     gl.uniformMatrix4fv(modelMatrixUniform, false, modelMatrix);
     gl.uniformMatrix4fv(viewMatrixUniform, false, cameraControllerInstance.getCamera().getViewMatrix());
     gl.uniformMatrix4fv(projMatrixUniform, false, projMatrix);
     gl.uniformMatrix4fv(normalMatrixUniform, false, normalMatrix);
     gl.uniform1i(useLightingUniform, lighting);
+    gl.uniform3fv(cameraPositionUniform, cameraControllerInstance.getCamera().getPosition());
 }
 
 function drawScene(){

@@ -36,16 +36,20 @@
 
             uniform mat4 normalMatrix;
 
+            uniform vec3 uCameraPosition;
+
             varying vec3 vNormal;
             varying vec3 vPosWorld;
             varying vec2 vUV;
+            varying vec3 vToCamera;
 
             void main(void) {
                 gl_Position = projMatrix * viewMatrix * modelMatrix * vec4(aVertexPosition, 1.0);
 
-                vPosWorld=(modelMatrix*vec4(aVertexPosition,1.0)).xyz;    //la posicion en coordenadas de mundo
-                vNormal=(normalMatrix*vec4(aVertexNormal,1.0)).xyz;       //la normal en coordenadas de mundo
-                vUV=aUV;
+                vPosWorld = (modelMatrix*vec4(aVertexPosition,1.0)).xyz;    //la posicion en coordenadas de mundo
+                vNormal = (normalMatrix*vec4(aVertexNormal,1.0)).xyz;       //la normal en coordenadas de mundo
+                vUV = aUV;
+                vToCamera = normalize(uCameraPosition - vPosWorld);
             }
         </script>
 
@@ -61,16 +65,19 @@
 
             uniform mat4 normalMatrix;
 
+            uniform vec3 uCameraPosition;
+
             uniform vec2 uOffsetUV;
             uniform float uScaleUV;
 
             varying vec3 vNormal;
             varying vec3 vPosWorld;
             varying vec2 vUV;
+            varying vec3 vToCamera;
 
             uniform sampler2D uSampler0;
 
-            const float epsilon=0.00000001;
+            const float epsilon=0.000000001;
             const float amplitud=40.0;
 
             void main(void) {
@@ -128,6 +135,7 @@
                 vec3 tan2=(gradU1+gradU2)/2.0;
                 vNormal=cross(tan1,tan2);
                 vUV=uv;
+                vToCamera = normalize(uCameraPosition - vPosWorld);
             }
         </script>
 
@@ -136,6 +144,7 @@
             varying vec3 vNormal;
             varying vec3 vPosWorld;
             varying vec2 vUV;
+            varying vec3 vToCamera;
 
             uniform sampler2D uSampler0;
 
@@ -144,8 +153,16 @@
             void main(void) {
                 vec3 color=texture2D(uSampler0, vec2(vUV.s, vUV.t)).xyz;
                 if (uUseLighting) {
-                    vec3 lightVec=normalize(vec3(0.0177,0.707,0.707));
-                    color=dot(lightVec,vNormal)*color+vec3(0.2,0.2,0.2);
+                    vec3 L = normalize(vec3(0.0177,0.707,0.707));
+                    vec3 N = vNormal;
+                    vec3 R = reflect(L,N);
+                    vec3 V = vToCamera;
+
+                    float Iamb = 0.3;
+                    float Idif = clamp(dot(N,L),0.0,1.0);
+                    float Ispe = 0.5*pow(clamp(dot(V,R),0.0,1.0), 2.0);
+
+                    color=( Iamb + Idif + Ispe )*color;
                 }
 
                 gl_FragColor = vec4(color,1.0);
@@ -157,6 +174,7 @@
             varying vec3 vNormal;
             varying vec3 vPosWorld;
             varying vec2 vUV;
+            varying vec3 vToCamera;
 
             uniform sampler2D uSampler0;
             uniform sampler2D uSampler1;
@@ -318,8 +336,16 @@
                 float mixMediumHigh=smoothstep(10.0,20.0,vPosWorld.y);
                 vec3 color = mix(mix(lowZone,mediumZone,mixLowMedium),highZone,mixMediumHigh);
 
-                vec3 lightVec=normalize(vec3(0.0177,0.707,0.707));
-                color=dot(lightVec,vNormal)*color+vec3(0.2,0.2,0.2);
+                vec3 L = normalize(vec3(0.0177,0.707,0.707));
+                vec3 N = vNormal;
+                vec3 R = reflect(L,N);
+                vec3 V = vToCamera;
+
+                float Iamb = 0.3;
+                float Idif = clamp(dot(N,L),0.0,1.0);
+                float Ispe = 0.5*pow(clamp(dot(V,R),0.0,1.0), 2.0);
+
+                color=( Iamb + Idif + Ispe )*color;
 
                 gl_FragColor = vec4(color,1.0);
             }
@@ -330,6 +356,7 @@
             varying vec3 vNormal;
             varying vec3 vPosWorld;
             varying vec2 vUV;
+            varying vec3 vToCamera;
 
             uniform sampler2D uSampler0;
             uniform vec2 uOffsetUV;
@@ -343,8 +370,17 @@
                 vec3 water3=texture2D(uSampler0,uvWater*2.11).xyz;
 
                 vec3 color=mix(mix(water1,water2,0.5),water3,0.3);
-                vec3 lightVec=normalize(vec3(0.0177,0.707,0.707));
-                color=dot(lightVec,vNormal)*color+vec3(0.2,0.2,0.2);
+
+                vec3 L = normalize(vec3(0.0177,0.707,0.707));
+                vec3 N = vNormal;
+                vec3 R = reflect(L,N);
+                vec3 V = vToCamera;
+
+                float Iamb = 0.3;
+                float Idif = clamp(dot(N,L),0.0,1.0);
+                float Ispe = 0.5*pow(clamp(dot(V,R),0.0,1.0), 2.0);
+
+                color=( Iamb + Idif + Ispe )*color;
 
                 gl_FragColor = vec4(color,1.0);
             }
