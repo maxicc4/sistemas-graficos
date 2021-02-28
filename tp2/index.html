@@ -154,9 +154,9 @@
                 vec3 color=texture2D(uSampler0, vec2(vUV.s, vUV.t)).xyz;
                 if (uUseLighting) {
                     vec3 L = normalize(vec3(0.0177,0.707,0.707));
-                    vec3 N = vNormal;
+                    vec3 N = normalize(vNormal);
                     vec3 R = reflect(L,N);
-                    vec3 V = vToCamera;
+                    vec3 V = normalize(vToCamera);
 
                     float Iamb = 0.3;
                     float Idif = clamp(dot(N,L),0.0,1.0);
@@ -337,9 +337,9 @@
                 vec3 color = mix(mix(lowZone,mediumZone,mixLowMedium),highZone,mixMediumHigh);
 
                 vec3 L = normalize(vec3(0.0177,0.707,0.707));
-                vec3 N = vNormal;
+                vec3 N = normalize(vNormal);
                 vec3 R = reflect(L,N);
-                vec3 V = vToCamera;
+                vec3 V = normalize(vToCamera);
 
                 float Iamb = 0.3;
                 float Idif = clamp(dot(N,L),0.0,1.0);
@@ -372,9 +372,9 @@
                 vec3 color=mix(mix(water1,water2,0.5),water3,0.3);
 
                 vec3 L = normalize(vec3(0.0177,0.707,0.707));
-                vec3 N = vNormal;
+                vec3 N = normalize(vNormal);
                 vec3 R = reflect(L,N);
-                vec3 V = vToCamera;
+                vec3 V = normalize(vToCamera);
 
                 float Iamb = 0.3;
                 float Idif = clamp(dot(N,L),0.0,1.0);
