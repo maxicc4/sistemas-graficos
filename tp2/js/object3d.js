@@ -95,7 +95,10 @@ class HelicopterContainer extends Object3D {
         mat4.rotate(mHelicopter, mHelicopter, this.roll, [1, 0, 0]);
         this.children[0].setM(mHelicopter);
 
-        this.children[1].setM(m);
+        // Para que la esfera no se levante
+        let pos = this.getPosition();
+        pos[1] = 0;
+        this.children[1].setPosition(pos);
     }
 
     setYaw(yaw) {
@@ -567,32 +570,7 @@ class SkySphere extends Object3D {
         let children = [];
         super(m, new Grid3D(new SphereSurface(PLOT_SIZE_TERRAIN), 50, 50), children);
         this.setM(m);
-        this.addCubeMap([
-            {
-                target: gl.TEXTURE_CUBE_MAP_POSITIVE_X,
-                url: 'img/cielo-pos-x.png',
-            },
-            {
-                target: gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
-                url: 'img/cielo-neg-x.png',
-            },
-            {
-                target: gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
-                url: 'img/cielo-pos-y.png',
-            },
-            {
-                target: gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
-                url: 'img/cielo-neg-y.png',
-            },
-            {
-                target: gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
-                url: 'img/cielo-pos-z.png',
-            },
-            {
-                target: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z,
-                url: 'img/cielo-neg-z.png',
-            },
-        ]);
+        this.addTexture('img/cielo.jpg');
     }
 
     draw() {

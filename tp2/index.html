@@ -179,7 +179,7 @@
             void main(void) {
                 vec3 color=texture2D(uSampler0, vec2(vUV.s, vUV.t)).xyz;
 
-                vec3 L = normalize(vec3(2000,1500,100));
+                vec3 L = normalize(vec3(-1000,2000,-1000));
                 vec3 N = normalize(vNormal);
                 vec3 R = reflect(L,N);
                 vec3 V = normalize(vToCamera);
@@ -360,7 +360,7 @@
                 float mixMediumHigh=smoothstep(10.0,20.0,vPosWorld.y);
                 vec3 color = mix(mix(lowZone,mediumZone,mixLowMedium),highZone,mixMediumHigh);
 
-                vec3 L = normalize(vec3(2000,1500,100));
+                vec3 L = normalize(vec3(-1000,2000,-1000));
                 vec3 N = normalize(vNormal);
                 vec3 R = reflect(L,N);
                 vec3 V = normalize(vToCamera);
@@ -393,7 +393,7 @@
 
                 vec3 color=mix(mix(water1,water2,0.5),water3,0.3);
 
-                vec3 L = normalize(vec3(2000,1500,100));
+                vec3 L = normalize(vec3(-1000,2000,-1000));
                 vec3 N = normalize(vNormal);
                 vec3 R = reflect(L,N);
                 vec3 V = normalize(vToCamera);
@@ -414,10 +414,10 @@
             varying vec3 vPosWorld;
             varying vec2 vUV;
 
-            uniform samplerCube uSampler0;
+            uniform sampler2D uSampler0;
 
             void main(void) {
-                gl_FragColor = textureCube(uSampler0, normalize(vNormal));
+                gl_FragColor = texture2D(uSampler0, vUV);
 
 
             }
