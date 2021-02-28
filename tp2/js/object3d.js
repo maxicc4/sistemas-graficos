@@ -23,7 +23,7 @@ class Object3D {
 
         for (let ii = 0; ii < this.textures.length; ++ii) {
             gl.activeTexture(gl.TEXTURE0 + ii);
-            gl.bindTexture(gl.TEXTURE_2D, this.textures[ii].getWebGLTexture());
+            gl.bindTexture(this.textures[ii].getTextureType(), this.textures[ii].getWebGLTexture());
             gl.uniform1i(gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), "uSampler"+ii), ii);
         }
 
@@ -45,6 +45,10 @@ class Object3D {
 
     addTexture(url) {
         this.textures.push(Texture.createTextureFromUrl(url));
+    }
+
+    addCubeMap(faceInfos) {
+        this.textures.push(new CubeMap(faceInfos));
     }
 
     setPosition(p) {
@@ -563,14 +567,38 @@ class SkySphere extends Object3D {
         let children = [];
         super(m, new Grid3D(new SphereSurface(PLOT_SIZE_TERRAIN), 50, 50), children);
         this.setM(m);
-        this.addColor([36,227,237,255]);
+        this.addCubeMap([
+            {
+                target: gl.TEXTURE_CUBE_MAP_POSITIVE_X,
+                url: 'img/cielo-pos-x.png',
+            },
+            {
+                target: gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
+                url: 'img/cielo-neg-x.png',
+            },
+            {
+                target: gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
+                url: 'img/cielo-pos-y.png',
+            },
+            {
+                target: gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
+                url: 'img/cielo-neg-y.png',
+            },
+            {
+                target: gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
+                url: 'img/cielo-pos-z.png',
+            },
+            {
+                target: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z,
+                url: 'img/cielo-neg-z.png',
+            },
+        ]);
     }
 
     draw() {
-        //gl.useProgram(glProgram);
-        lighting = false;
+        gl.useProgram(glProgramSky);
         super.draw();
-        lighting = true;
+        gl.useProgram(glProgram);
     }
 }
 

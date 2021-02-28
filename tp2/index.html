@@ -139,6 +139,34 @@
             }
         </script>
 
+        <script type="x-shader/x-vertex" id="vertex-shader-sky">
+            precision highp float;
+
+            attribute vec3 aVertexPosition;
+            attribute vec3 aVertexNormal;
+            attribute vec2 aUV;
+
+            uniform mat4 modelMatrix;
+            uniform mat4 viewMatrix;
+            uniform mat4 projMatrix;
+
+            uniform mat4 normalMatrix;
+
+            uniform vec3 uCameraPosition;
+
+            varying vec3 vNormal;
+            varying vec3 vPosWorld;
+            varying vec2 vUV;
+
+            void main(void) {
+                gl_Position = projMatrix * viewMatrix * modelMatrix * vec4(aVertexPosition, 1.0);
+
+                vPosWorld = (modelMatrix*vec4(aVertexPosition,1.0)).xyz;    //la posicion en coordenadas de mundo
+                vNormal = (normalMatrix*vec4(aVertexNormal,1.0)).xyz;       //la normal en coordenadas de mundo
+                vUV = aUV;
+            }
+        </script>
+
         <script type="x-shader/x-fragment" id="fragment-shader">
             precision highp float;
             varying vec3 vNormal;
@@ -148,22 +176,19 @@
 
             uniform sampler2D uSampler0;
 
-            uniform bool uUseLighting;          // usar iluminacion si/no
-
             void main(void) {
                 vec3 color=texture2D(uSampler0, vec2(vUV.s, vUV.t)).xyz;
-                if (uUseLighting) {
-                    vec3 L = normalize(vec3(0.0177,0.707,0.707));
-                    vec3 N = normalize(vNormal);
-                    vec3 R = reflect(L,N);
-                    vec3 V = normalize(vToCamera);
 
-                    float Iamb = 0.3;
-                    float Idif = clamp(dot(N,L),0.0,1.0);
-                    float Ispe = 0.5*pow(clamp(dot(V,R),0.0,1.0), 2.0);
+                vec3 L = normalize(vec3(2000,1500,100));
+                vec3 N = normalize(vNormal);
+                vec3 R = reflect(L,N);
+                vec3 V = normalize(vToCamera);
 
-                    color=( Iamb + Idif + Ispe )*color;
-                }
+                float Iamb = 0.3;
+                float Idif = clamp(dot(N,L),0.0,1.0);
+                float Ispe = 0.5*pow(clamp(dot(V,R),0.0,1.0), 2.0);
+
+                color=( Iamb + Idif + Ispe )*color;
 
                 gl_FragColor = vec4(color,1.0);
             }
@@ -185,7 +210,6 @@
             uniform sampler2D uSampler6;
             uniform sampler2D uSampler7;
 
-            uniform bool uUseLighting;          // usar iluminacion si/no
 
             //--------------------------------------------------------------------------------------
 
@@ -336,7 +360,7 @@
                 float mixMediumHigh=smoothstep(10.0,20.0,vPosWorld.y);
                 vec3 color = mix(mix(lowZone,mediumZone,mixLowMedium),highZone,mixMediumHigh);
 
-                vec3 L = normalize(vec3(0.0177,0.707,0.707));
+                vec3 L = normalize(vec3(2000,1500,100));
                 vec3 N = normalize(vNormal);
                 vec3 R = reflect(L,N);
                 vec3 V = normalize(vToCamera);
@@ -361,8 +385,6 @@
             uniform sampler2D uSampler0;
             uniform vec2 uOffsetUV;
 
-            uniform bool uUseLighting;          // usar iluminacion si/no
-
             void main(void) {
                 vec2 uvWater = vUV + uOffsetUV;
                 vec3 water1=texture2D(uSampler0,uvWater*100.0).xyz;
@@ -371,7 +393,7 @@
 
                 vec3 color=mix(mix(water1,water2,0.5),water3,0.3);
 
-                vec3 L = normalize(vec3(0.0177,0.707,0.707));
+                vec3 L = normalize(vec3(2000,1500,100));
                 vec3 N = normalize(vNormal);
                 vec3 R = reflect(L,N);
                 vec3 V = normalize(vToCamera);
@@ -383,6 +405,21 @@
                 color=( Iamb + Idif + Ispe )*color;
 
                 gl_FragColor = vec4(color,1.0);
+            }
+        </script>
+
+        <script type="x-shader/x-fragment" id="fragment-shader-sky">
+            precision highp float;
+            varying vec3 vNormal;
+            varying vec3 vPosWorld;
+            varying vec2 vUV;
+
+            uniform samplerCube uSampler0;
+
+            void main(void) {
+                gl_FragColor = textureCube(uSampler0, normalize(vNormal));
+
+
             }
         </script>
 

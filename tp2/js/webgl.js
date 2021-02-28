@@ -7,6 +7,7 @@ var gl = null,
     glProgram = null,
     glProgramTerrain = null,
     glProgramWater = null,
+    glProgramSky = null,
     lighting = true;
 
 var vertexPositionAttribute = null,
@@ -65,9 +66,11 @@ function initShaders() {
     //compile shaders
     let vertexShader = makeShader($("#vertex-shader").text(), gl.VERTEX_SHADER);
     let vertexShaderTerrain = makeShader($("#vertex-shader-terrain").text(), gl.VERTEX_SHADER);
+    let vertexShaderSky = makeShader($("#vertex-shader-sky").text(), gl.VERTEX_SHADER);
     let fragmentShader = makeShader($("#fragment-shader").text(), gl.FRAGMENT_SHADER);
     let fragmentShaderTerrain = makeShader($("#fragment-shader-terrain").text(), gl.FRAGMENT_SHADER);
     let fragmentShaderWater = makeShader($("#fragment-shader-water").text(), gl.FRAGMENT_SHADER);
+    let fragmentShaderSky = makeShader($("#fragment-shader-sky").text(), gl.FRAGMENT_SHADER);
 
     //create program
     glProgram = gl.createProgram();
@@ -114,6 +117,21 @@ function initShaders() {
     glProgramWater.vertexUVAttribute = gl.getAttribLocation(glProgramWater, "aUV");
     gl.enableVertexAttribArray(glProgramWater.vertexUVAttribute);
 
+    glProgramSky = gl.createProgram();
+    gl.attachShader(glProgramSky, vertexShaderSky);
+    gl.attachShader(glProgramSky, fragmentShaderSky);
+    gl.linkProgram(glProgramSky);
+    if (!gl.getProgramParameter(glProgramSky, gl.LINK_STATUS)) {
+        alert("Unable to initialize the shader glProgramSky.");
+    }
+    gl.useProgram(glProgramSky);
+    glProgramSky.vertexPositionAttribute = gl.getAttribLocation(glProgramSky, "aVertexPosition");
+    gl.enableVertexAttribArray(glProgramSky.vertexPositionAttribute);
+    glProgramSky.vertexNormalAttribute = gl.getAttribLocation(glProgramSky, "aVertexNormal");
+    gl.enableVertexAttribArray(glProgramSky.vertexNormalAttribute);
+    glProgramSky.vertexUVAttribute = gl.getAttribLocation(glProgramSky, "aUV");
+    gl.enableVertexAttribArray(glProgramSky.vertexUVAttribute);
+
     gl.useProgram(glProgram);
 }
 
@@ -134,14 +152,12 @@ function setupVertexShaderMatrix(){
     var viewMatrixUniform  = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), "viewMatrix");
     var projMatrixUniform  = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), "projMatrix");
     var normalMatrixUniform  = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), "normalMatrix");
-    var useLightingUniform = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), "uUseLighting");
     var cameraPositionUniform = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), "uCameraPosition");
 
     gl.uniformMatrix4fv(modelMatrixUniform, false, modelMatrix);
     gl.uniformMatrix4fv(viewMatrixUniform, false, cameraControllerInstance.getCamera().getViewMatrix());
     gl.uniformMatrix4fv(projMatrixUniform, false, projMatrix);
     gl.uniformMatrix4fv(normalMatrixUniform, false, normalMatrix);
-    gl.uniform1i(useLightingUniform, lighting);
     gl.uniform3fv(cameraPositionUniform, cameraControllerInstance.getCamera().getPosition());
 }
 
