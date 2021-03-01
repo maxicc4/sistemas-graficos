@@ -180,23 +180,23 @@ function animate(){
         posHelicopter[0] = posHelicopter[0] + sizePlot;
         helicopterControllerInstance.setPosition(posHelicopter);
         terrain.decreaseOffsetU();
-        heliport.translate(vec3.fromValues(sizePlot,0,0));
+        heliport.translate(vec3.fromValues(0,0,sizePlot));
     } else if(posTerrain[0]-posHelicopter[0] < -halfSizePlot) {
         posHelicopter[0] = posHelicopter[0] - sizePlot;
         helicopterControllerInstance.setPosition(posHelicopter);
         terrain.increaseOffsetU();
-        heliport.translate(vec3.fromValues(-sizePlot,0,0));
+        heliport.translate(vec3.fromValues(0,0,-sizePlot));
     }
     if ( posTerrain[2]-posHelicopter[2] > halfSizePlot ) {
         posHelicopter[2] = posHelicopter[2] + sizePlot;
         helicopterControllerInstance.setPosition(posHelicopter);
         terrain.decreaseOffsetV();
-        heliport.translate(vec3.fromValues(0,0,sizePlot));
+        heliport.translate(vec3.fromValues(-sizePlot,0,0));
     } else if(posTerrain[2]-posHelicopter[2] < -halfSizePlot) {
         posHelicopter[2] = posHelicopter[2] - sizePlot;
         helicopterControllerInstance.setPosition(posHelicopter);
         terrain.increaseOffsetV();
-        heliport.translate(vec3.fromValues(0,0,-sizePlot));
+        heliport.translate(vec3.fromValues(sizePlot,0,0));
     }
 
     /*let newModelMatrix = mat4.create();
