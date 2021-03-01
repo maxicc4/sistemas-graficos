@@ -175,6 +175,8 @@
             varying vec3 vToCamera;
 
             uniform sampler2D uSampler0;
+            uniform sampler2D uSampler1;
+            uniform sampler2D uSampler2;
 
             void main(void) {
                 vec3 color=texture2D(uSampler0, vec2(vUV.s, vUV.t)).xyz;
@@ -189,6 +191,14 @@
                 float Ispe = 0.5*pow(clamp(dot(V,R),0.0,1.0), 2.0);
 
                 color=( Iamb + Idif + Ispe )*color;
+
+                vec3 Rsky = reflect(V,N);       // rayo reflejado
+                float r = length(Rsky);
+                float alfa = (atan(Rsky.z,Rsky.x)+3.14*0.5)/3.14;
+                float beta = acos(Rsky.y/r)/3.14;
+                vec3 skyReflect = texture2D(uSampler2, vec2(alfa, 1.0-beta)).xyz;
+                float kSkyReflect = texture2D(uSampler1, vec2(vUV.s, vUV.t)).r;
+                color += kSkyReflect*skyReflect;
 
                 gl_FragColor = vec4(color,1.0);
             }

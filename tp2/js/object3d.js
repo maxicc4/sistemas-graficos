@@ -160,6 +160,8 @@ class Helicopter extends Object3D {
         this.setM(m);
         this.armAngle = 0;
         this.addTexture("img/cabina.png");
+        this.addTexture("img/cabina-reflectividad.jpg");
+        this.addTexture("img/cielo.jpg");
     }
 
     setM(m) {
@@ -231,6 +233,7 @@ class RotorArm extends Object3D {
         super(m, new Grid3D(new Cylinder(CABIN_WIDTH*0.13, CABIN_LENGTH/5, true), 16, 20), children);
         this.setM(m);
         this.addColor([51,51,51,255]);
+        this.addColor([0,0,0,255]);
     }
 
     setM(m) {
@@ -256,6 +259,7 @@ class Arm extends Object3D {
         super(m, new Grid3D(new ArmSurface(CABIN_WIDTH*0.67, CABIN_LENGTH*0.09, CABIN_LENGTH*0.045), 16, 20), children);
         this.setM(m);
         this.addColor([235,217,204,255]);
+        this.addColor([0,0,0,255]);
     }
 
     setM(m) {
@@ -282,6 +286,7 @@ class Propeller extends Object3D {
         super(m, new Grid3D(new Ring(CABIN_WIDTH*0.3, CABIN_WIDTH*0.375, CABIN_WIDTH*0.2), 16, 20), children);
         this.setM(m);
         this.addColor([204,59,41,255]);
+        this.addColor([20,20,20,255]);
         this.propellerRotation = 0;
     }
 
@@ -317,6 +322,7 @@ class PropellerShaft extends Object3D {
         this.setM(m);
         this.bladeRotation = 0;
         this.addColor([235,217,204,255]);
+        this.addColor([0,0,0,255]);
     }
 
     setM(m) {
@@ -348,6 +354,7 @@ class Blade extends Object3D {
         super(m, new Grid3D(new BladeSurface(CABIN_WIDTH*0.025, CABIN_WIDTH*0.2, CABIN_WIDTH*0.3), 16, 20), children);
         this.setM(m);
         this.addColor([153,153,153,255]);
+        this.addColor([0,0,0,255]);
     }
 
     setM(m) {
@@ -367,6 +374,7 @@ class Tail extends Object3D {
         super(m, null, children);
         this.setM(m);
         this.addColor([235,217,204,255]);
+        this.addColor([0,0,0,255]);
     }
 
     setM(m) {
@@ -394,6 +402,7 @@ class TailTieRod extends Object3D {
         super(m, new Grid3D(new TailTieRodSurface(CABIN_HEIGHT/4, CABIN_HEIGHT/16, CABIN_LENGTH/2, CABIN_WIDTH/32), 16, 20), children);
         this.setM(m);
         this.addColor([235,217,204,255]);
+        this.addColor([20,20,20,255]);
     }
 
     setM(m) {
@@ -410,6 +419,7 @@ class TailCylinder extends Object3D {
         this.setM(m);
         this.roll = 0;
         this.addColor([235,217,204,255]);
+        this.addColor([0,0,0,255]);
     }
 
     setM(m) {
@@ -438,6 +448,7 @@ class Fin extends Object3D {
         super(m, new Grid3D(new FinSurface(CABIN_WIDTH*0.48, CABIN_HEIGHT, CABIN_WIDTH/32), 16, 20), children);
         this.setM(m);
         this.addColor([204,59,41,255]);
+        this.addColor([0,0,0,255]);
     }
 
     setM(m) {
@@ -453,6 +464,7 @@ class Skid extends Object3D {
         super(m, new Grid3D(new SkidSurface(CABIN_LENGTH*0.6, CABIN_LENGTH*0.015), 16, 20), children);
         this.setM(m);
         this.addColor([127,127,127,255]);
+        this.addColor([0,0,0,255]);
     }
 
     setM(m) {
@@ -586,6 +598,7 @@ class Heliport extends Object3D {
         super(m, new Grid3D(new BoxSurface(CABIN_LENGTH*4, CABIN_LENGTH*4, CABIN_WIDTH*0.2), 8, 4), children);
         this.setM(m);
         this.addTexture("img/helipad.jpg");
+        this.addColor([0,0,0,255]);
     }
 }
 
