@@ -18,9 +18,9 @@ class HelicopterController {
 
         this.maxSpeed=1;
         this.maxAltitude=PLOT_SIZE_TERRAIN*0.5;
-        this.minAltitude=0;
+        this.minAltitude=4.7;
 
-        this.position = vec3.fromValues(0,0,0);
+        this.position = vec3.fromValues(0,this.minAltitude,0);
 
         this.speed=0;
         this.altitude=this.minAltitude;

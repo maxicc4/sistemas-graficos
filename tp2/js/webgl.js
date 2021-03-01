@@ -219,6 +219,9 @@ function createObjects3D() {
     terrain = new Terrain(mTerrain);
     let mHeliport = mat4.create();
     mat4.rotate(mHeliport, mTerrain, Math.PI/2, [0, 1, 0]);
+    let initialPosHeliport = helicopterControllerInstance.getPosition();
+    initialPosHeliport[1] -= 0.5;
+    mat4.translate(mHeliport, mHeliport, initialPosHeliport);
     heliport = new Heliport(mHeliport);
 
     cameraControllerInstance = new CameraController( new OrbitalCamera(5, helicopterContainer) );

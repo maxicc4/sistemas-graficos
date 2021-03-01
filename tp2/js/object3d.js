@@ -506,7 +506,7 @@ class Terrain extends Object3D {
             children
         );
         this.setM(m);
-        this.offsetUV = vec2.fromValues(0.625,0.375);
+        this.offsetUV = vec2.fromValues(0.625,0.4375);
         this.addTexture("img/heightmap.png");
         this.addTexture("img/arena.jpg");
         this.addTexture("img/pasto.jpg");
@@ -595,7 +595,7 @@ class SkySphere extends Object3D {
 class Heliport extends Object3D {
     constructor(m) {
         let children = [];
-        super(m, new Grid3D(new BoxSurface(CABIN_LENGTH*4, CABIN_LENGTH*4, CABIN_WIDTH*0.2), 8, 4), children);
+        super(m, new Grid3D(new BoxSurface(CABIN_LENGTH*4, CABIN_LENGTH*4, CABIN_WIDTH), 8, 4), children);
         this.setM(m);
         this.addTexture("img/helipad.jpg");
         this.addColor([0,0,0,255]);

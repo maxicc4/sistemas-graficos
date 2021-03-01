@@ -41,8 +41,8 @@ class OrbitalCamera extends Camera {
     constructor(radius, target) {
         super(radius, target);
         // valores iniciales
-        this.alpha = 0;
-        this.beta = Math.PI/2;
+        this.alpha = Math.PI*1.2;
+        this.beta = Math.PI*0.45;
         // factor con el que se mueve la camara
         this.speedFactor = 0.01;
     }
