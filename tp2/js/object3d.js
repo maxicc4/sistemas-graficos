@@ -608,6 +608,8 @@ class WaterPlane extends Object3D {
         super(m, new Grid3D(new Plane(PLOT_SIZE_TERRAIN*3, PLOT_SIZE_TERRAIN*3), 20,20), children);
         this.setM(m);
         this.addTexture("img/agua.jpg");
+        this.addColor([50,50,50,255]);
+        this.addTexture("img/cielo.jpg");
         this.offsetUV = vec2.fromValues(0.0,0.0);
     }
 
