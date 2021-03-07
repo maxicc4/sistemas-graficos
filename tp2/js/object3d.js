@@ -7,7 +7,7 @@ const NUMBER_OF_BLADES = 12;
 
 const NUM_ROWS_GRID_TERRAIN = 200;
 const NUM_COLS_GRID_TERRAIN = 200;
-const PLOT_SIZE_TERRAIN = 150;
+const PLOT_SIZE_TERRAIN = 350;
 
 class Object3D {
     constructor(m, grid3D, children) {
