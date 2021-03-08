@@ -17,10 +17,11 @@ class HelicopterController {
         this.deltaArmAngle=0.01;
 
         this.maxSpeed=1;
-        this.maxAltitude=CABIN_HEIGHT*110;
-        this.minAltitude=4.7;
+        this.maxAltitude=CABIN_HEIGHT*120;
+        this.minAltitude=3.8;
 
-        this.position = vec3.fromValues(0,this.minAltitude,0);
+        this.position = vec3.fromValues(100,this.minAltitude,-120);
+        this.helicopterContainer.setPosition(this.position);
 
         this.speed=0;
         this.altitude=this.minAltitude;
