@@ -76,7 +76,8 @@
             varying vec3 vToCamera;
 
             uniform sampler2D uSampler0;
-            uniform float uEpsilon;
+            uniform float uEpsilonUV;
+            uniform float uEpsilonNormal;
 
             const float amplitud=40.0;
 
@@ -85,11 +86,11 @@
                 vec2 uv = uOffsetUV + aUV*uScaleUV;
 
                 vec4 center = texture2D(uSampler0, vec2(uv.s, uv.t));
-                vec4 masU = texture2D(uSampler0, vec2(uv.s+uEpsilon, uv.t));
-                vec4 masV = texture2D(uSampler0, vec2(uv.s, uv.t+uEpsilon));
+                vec4 masU = texture2D(uSampler0, vec2(uv.s+uEpsilonUV, uv.t));
+                vec4 masV = texture2D(uSampler0, vec2(uv.s, uv.t+uEpsilonUV));
 
-                vec4 menosU = texture2D(uSampler0, vec2(uv.s-uEpsilon, uv.t));
-                vec4 menosV = texture2D(uSampler0, vec2(uv.s, uv.t-uEpsilon));
+                vec4 menosU = texture2D(uSampler0, vec2(uv.s-uEpsilonUV, uv.t));
+                vec4 menosV = texture2D(uSampler0, vec2(uv.s, uv.t-uEpsilonUV));
 
 
                 // elevamos la coordenada Y
@@ -115,37 +116,37 @@
                  y las promedio
                 */
      /*           vec3 positionMasU = aVertexPosition;
-                positionMasU.z += 5.25;
+                positionMasU.z += uEpsilonNormal;
                 positionMasU.y += masU.x*amplitud;
                 vec3 tangentU1 = positionMasU-position;
 
                 vec3 positionMasV = aVertexPosition;
-                positionMasV.x += 5.25;
+                positionMasV.x += uEpsilonNormal;
                 positionMasV.y += masV.x*amplitud;
                 vec3 tangentV1 = positionMasV-position;
 
                 vec3 positionMenosU = aVertexPosition;
-                positionMenosU.z -= 5.25;
+                positionMenosU.z -= uEpsilonNormal;
                 positionMenosU.y += menosU.x*amplitud;
                 vec3 tangentU2 = position-positionMenosU;
 
                 vec3 positionMenosV = aVertexPosition;
-                positionMenosV.x -= 5.25;
+                positionMenosV.x -= uEpsilonNormal;
                 positionMenosV.y += menosV.x*amplitud;
                 vec3 tangentV2 = position-positionMenosV;
 
                 vNormal = (vec4(cross( (tangentU1+tangentU2)/2.0, (tangentV1+tangentV2)/2.0 ),1.0)).xyz;
 */
 
-                float angU=atan((masU.x-center.x)*amplitud,5.25);
-                float angV=atan((masV.x-center.x)*amplitud,5.25);
+                float angU=atan((masU.x-center.x)*amplitud, uEpsilonNormal);
+                float angV=atan((masV.x-center.x)*amplitud, uEpsilonNormal);
 
                 // tangentes en U y en V
                 vec3 gradU1=vec3(cos(angU),sin(angU),0.0);
                 vec3 gradV1=vec3(0.0      ,sin(angV),cos(angV));
 
-                angU=atan((center.x-menosU.x)*amplitud,5.25);
-                angV=atan((center.x-menosV.x)*amplitud,5.25);
+                angU=atan((center.x-menosU.x)*amplitud, uEpsilonNormal);
+                angV=atan((center.x-menosV.x)*amplitud, uEpsilonNormal);
 
                 // segundo conjunto de tangentes en U y en V
                 vec3 gradU2=vec3(cos(angU),sin(angU),0.0);

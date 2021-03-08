@@ -521,7 +521,8 @@ class Terrain extends Object3D {
         gl.useProgram(glProgramTerrain);
         gl.uniform2fv(gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), "uOffsetUV"), this.offsetUV);
         gl.uniform1f(gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), "uScaleUV"), this.scaleUV);
-        gl.uniform1f(gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), "uEpsilon"), 1/NUM_ROWS_AND_COLS_GRID_TERRAIN);
+        gl.uniform1f(gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), "uEpsilonUV"), 1/NUM_ROWS_AND_COLS_GRID_TERRAIN);
+        gl.uniform1f(gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), "uEpsilonNormal"), (PLOT_SIZE_TERRAIN*3)/(NUM_ROWS_AND_COLS_GRID_TERRAIN*2));
         super.draw();
         gl.useProgram(glProgram);
     }
