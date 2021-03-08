@@ -5,8 +5,7 @@ const CABIN_WIDTH = 0.6;
 const CABIN_HEIGHT = 0.65;
 const NUMBER_OF_BLADES = 12;
 
-const NUM_ROWS_GRID_TERRAIN = 200;
-const NUM_COLS_GRID_TERRAIN = 200;
+const NUM_ROWS_AND_COLS_GRID_TERRAIN = 200;
 const PLOT_SIZE_TERRAIN = 350;
 
 class Object3D {
@@ -500,8 +499,8 @@ class Terrain extends Object3D {
             m,
             new Grid3D(
                 new Plane(PLOT_SIZE_TERRAIN*3, PLOT_SIZE_TERRAIN*3),
-                NUM_ROWS_GRID_TERRAIN,
-                NUM_COLS_GRID_TERRAIN
+                NUM_ROWS_AND_COLS_GRID_TERRAIN,
+                NUM_ROWS_AND_COLS_GRID_TERRAIN
             ),
             children
         );
@@ -522,12 +521,13 @@ class Terrain extends Object3D {
         gl.useProgram(glProgramTerrain);
         gl.uniform2fv(gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), "uOffsetUV"), this.offsetUV);
         gl.uniform1f(gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), "uScaleUV"), this.scaleUV);
+        gl.uniform1f(gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), "uEpsilon"), 1/NUM_ROWS_AND_COLS_GRID_TERRAIN);
         super.draw();
         gl.useProgram(glProgram);
     }
 
     calculateScaleUV() {
-        this.numberOfPlots = 16;
+        this.numberOfPlots = 8;
         this.plotSizeUV = 1 / this.numberOfPlots;
         this.scaleUV = this.plotSizeUV * 3;
     }
