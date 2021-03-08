@@ -137,15 +137,15 @@
                 vNormal = (vec4(cross( (tangentU1+tangentU2)/2.0, (tangentV1+tangentV2)/2.0 ),1.0)).xyz;
 
 /*
-                float angU=atan((masU.x-center.x)*amplitud,epsilon);
-                float angV=atan((masV.x-center.x)*amplitud,epsilon);
+                float angU=atan((masU.x-center.x)*amplitud,5.25);
+                float angV=atan((masV.x-center.x)*amplitud,5.25);
 
                 // tangentes en U y en V
                 vec3 gradU1=vec3(cos(angU),sin(angU),0.0);
                 vec3 gradV1=vec3(0.0      ,sin(angV),cos(angV));
 
-                angU=atan((center.x-menosU.x)*amplitud,epsilon);
-                angV=atan((center.x-menosV.x)*amplitud,epsilon);
+                angU=atan((center.x-menosU.x)*amplitud,5.25);
+                angV=atan((center.x-menosV.x)*amplitud,5.25);
 
                 // segundo conjunto de tangentes en U y en V
                 vec3 gradU2=vec3(cos(angU),sin(angU),0.0);
@@ -402,7 +402,7 @@
                 vec3 R = reflect(L,N);
                 vec3 V = normalize(vToCamera);
 
-                float Iamb = 0.3;
+                float Iamb = 0.2;
                 float Idif = clamp(dot(N,L),0.0,1.0);
                 float Ispe = 0.5*pow(clamp(dot(V,R),0.0,1.0), 2.0);
 
