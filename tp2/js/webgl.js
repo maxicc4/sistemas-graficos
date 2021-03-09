@@ -127,8 +127,6 @@ function initShaders() {
     gl.useProgram(glProgramSky);
     glProgramSky.vertexPositionAttribute = gl.getAttribLocation(glProgramSky, "aVertexPosition");
     gl.enableVertexAttribArray(glProgramSky.vertexPositionAttribute);
-    glProgramSky.vertexNormalAttribute = gl.getAttribLocation(glProgramSky, "aVertexNormal");
-    gl.enableVertexAttribArray(glProgramSky.vertexNormalAttribute);
     glProgramSky.vertexUVAttribute = gl.getAttribLocation(glProgramSky, "aUV");
     gl.enableVertexAttribArray(glProgramSky.vertexUVAttribute);
 
