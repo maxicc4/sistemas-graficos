@@ -495,7 +495,6 @@ class SkidSurface extends Surface {
             vecNormal = bezierCurve.getTangent(v);      // la tangente a la trayectoria en el inicio es igual a la normal
         }
         vec3.normalize(vecNormal, vecNormal);
-        console.log(vecNormal);
         return vecNormal;
     }
 
