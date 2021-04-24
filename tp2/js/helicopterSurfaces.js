@@ -410,11 +410,21 @@ class SkidSurface extends Surface {
         this.radius = radius;
     }
 
+    getShape(u) {
+        return vec3.fromValues(
+            this.radius * Math.cos(2 * Math.PI * u),
+            this.radius * Math.sin(2 * Math.PI * u),
+            0
+        );
+    }
+
     getPosition(u, v) {
         let position;
         let trajectory;
         let bezierCurve;
         let p0, p1, p2, p3;
+        let vectorTangent, vectorNormal, vectorBiNormal;
+        let shape = this.getShape(u);
 
         if (v>=0 && v<=0.333) {
             p0 = {x: -this.length*0.0625, y: -this.length*0.5};
@@ -423,12 +433,10 @@ class SkidSurface extends Surface {
             p3 = {x: 0, y: -this.length*0.375};
             bezierCurve = new BezierCurve(p0, p1, p2, p3);
             trajectory = bezierCurve.getPosition(v/0.333);
+            vectorTangent = bezierCurve.getTangent(v/0.333);
+            vec3.normalize(vectorTangent, vectorTangent);
 
-            position = vec3.fromValues(
-                this.radius * Math.cos(2 * Math.PI * u) + trajectory[0],
-                trajectory[1],
-                this.radius * Math.sin(2 * Math.PI * u)
-            );
+            vectorNormal = vec3.fromValues(-(vectorTangent[1] / vectorTangent[0]), 1, 0);
         } else if (v>0.333 && v<=0.666) {
             p0 = {x: 0, y: -this.length*0.375};
             p1 = {x: 0, y: -this.length*0.1};
@@ -436,12 +444,10 @@ class SkidSurface extends Surface {
             p3 = {x: 0, y: this.length*0.375};
             bezierCurve = new BezierCurve(p0, p1, p2, p3);
             trajectory = bezierCurve.getPosition((v-0.333)/0.333);
+            vectorTangent = bezierCurve.getTangent((v-0.333)/0.333);
+            vec3.normalize(vectorTangent, vectorTangent);
 
-            position = vec3.fromValues(
-                this.radius * Math.cos(2 * Math.PI * u),
-                trajectory[1],
-                this.radius * Math.sin(2 * Math.PI * u)
-            );
+            vectorNormal = vec3.fromValues(-1, 0, 0);
         }  else if (v>0.666 && v<=1) {
             p0 = {x: 0, y: this.length*0.375};
             p1 = {x: 0, y: this.length*0.4375};
@@ -449,13 +455,24 @@ class SkidSurface extends Surface {
             p3 = {x: -this.length*0.0625, y: this.length*0.5};
             bezierCurve = new BezierCurve(p0, p1, p2, p3);
             trajectory = bezierCurve.getPosition((v-0.666)/0.333);
+            vectorTangent = bezierCurve.getTangent((v-0.666)/0.333);
+            vec3.normalize(vectorTangent, vectorTangent);
 
-            position = vec3.fromValues(
-                this.radius * Math.cos(2 * Math.PI * u) + trajectory[0],
-                trajectory[1],
-                this.radius * Math.sin(2 * Math.PI * u)
-            );
+            vectorNormal = vec3.fromValues((vectorTangent[1] / vectorTangent[0]), -1, 0);
         }
+
+        vec3.normalize(vectorNormal, vectorNormal);
+        vectorBiNormal = vec3.create();
+        vec3.cross(vectorBiNormal, vectorNormal, vectorTangent);
+        vec3.normalize(vectorBiNormal, vectorBiNormal);
+
+
+        position = vec3.fromValues(
+            vectorNormal[0]*shape[0] + vectorBiNormal[0]*shape[1] + vectorTangent[0]*shape[2] + trajectory[0],
+            vectorNormal[1]*shape[0] + vectorBiNormal[1]*shape[1] + vectorTangent[1]*shape[2] + trajectory[1],
+            vectorNormal[2]*shape[0] + vectorBiNormal[2]*shape[1] + vectorTangent[2]*shape[2] + trajectory[2]
+        );
+
         return position;
     }
 
